@@ -396,7 +396,7 @@ client.on('interactionCreate', async (interaction) => {
       .setCustomId('discord_bot')
       .setTitle('Discord Bot bestellen');
 
-    const hosting = new TextDisplayBuilder()
+    const hosting = new TextInputBuilder()
       .setCustomId('hosting_yes_or_no')
       .setLabel('Möchtest du deinen Bot direkt bei uns Hosten?')
       .setPlaceholder('Ja oder Nein')
