@@ -276,7 +276,8 @@ client.on('interactionCreate', async (interaction) => {
 
           '## ⛏️ Mineflayer Bots\n\n' +
 
-          'Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird? Dann schau auf folgender Website vorbei: [Website](https://deine-webseite.de)\n' +
+          '> Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird?\n' +
+          '> Dann schau auf folgender Website vorbei: [Website](https://deine-webseite.de)\n\n' +
 
 
             '💡 **Beispiel für eine Bestellung:**\n' +
