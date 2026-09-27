@@ -280,7 +280,7 @@ client.on('interactionCreate', async (interaction) => {
             .setSpacing(1)
         )
 
-        .addTextDisplayComponent(
+        .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## ⛏️ Mineflayer/AFK Bots\n\n' +
 
@@ -294,6 +294,7 @@ client.on('interactionCreate', async (interaction) => {
             .setDivider(true)
             .setSpacing(1)
         )
+        
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## Bot Typ Wählen:\n' +
