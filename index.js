@@ -217,108 +217,103 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === 'bot-shop') {
-    
-    // Erstellt den Container
-    const botShopContainer = new ContainerComponent()
-      .addSection(
-        new SectionComponent()
-          .addComponents(
-            new TextDisplayBuilder()
-              .setContent('# 🛒 Bot Shop - Wähle dein Paket')
-              .setStyle(TextDisplayStyle.Normal)
-          )
-          .addComponents(
-            new TextDisplayBuilder()
-              .setContent('Willkommen beim HugoSMP Entwickler-Bot Shop! Hier findest du professionelle Bots für deine Bedürfnisse.')
-              .setStyle(TextDisplayStyle.Normal)
-          )
+    const botShopContainer = new ContainerBuilder()
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          '# 🛒 HugoSMP Developers Bot Shop\n> Dein Profi-Shop für individuelle Bots — schnell, zuverlässig, auf dich zugeschnitten.'
+        )
       )
-      
-      // Discord Bot Option
-      .addSection(
-        new SectionComponent()
-          .addComponents(
-            new TextDisplayBuilder()
-              .setContent('🤖 **Discord Bot**\nModeration, Musik, Economy und mehr für deine Community.')
-              .setStyle(TextDisplayStyle.Normal)
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(true)
+          .setSpacing(SeparatorSpacingSize.Large)
+      )
+      .addSectionComponents(
+        new SectionBuilder()
+          .addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(
+              '## 🤖 Discord Bot\n> Custom Discord Bots mit Moderation, Tickets, Economy, Logging u.v.m. — genau für deine Community programmiert.'
+            )
           )
-          .addComponents(
+          .setButtonAccessory(
             new ButtonBuilder()
-              .setCustomId('select_discord_bot')
-              .setLabel('Discord Bot wählen')
-              .setEmoji('<:discord:1234567890>')
+              .setCustomId('shop_type_discord')
+              .setLabel('Discord Bot')
+              .setEmoji('🤖')
               .setStyle(ButtonStyle.Primary)
           )
       )
-      
-      // Mineflayer Bot Option  
-      .addSection(
-        new SectionComponent()
-          .addComponents(
-            new TextDisplayBuilder()
-              .setContent('⚔️ **Mineflayer Bot**\nMinecraft Automation, Farmbots und Server-Integration.')
-              .setStyle(TextDisplayStyle.Normal)
+      .addSectionComponents(
+        new SectionBuilder()
+          .addTextDisplayComponents(
+            new TextDisplayBuilder().setContent(
+              '## ⛏️ Mineflayer Bot\n> Minecraft Bots basierend auf Mineflayer — Farmbots, Chat-Bots, Anti-AFK & Automatisierung für deinen Server.'
+            )
           )
-          .addComponents(
+          .setButtonAccessory(
             new ButtonBuilder()
-              .setCustomId('select_mineflayer_bot')
-              .setLabel('Mineflayer Bot wählen')
-              .setEmoji('<:minecraft:1234567891>')
+              .setCustomId('shop_type_mineflayer')
+              .setLabel('Mineflayer Bot')
+              .setEmoji('⛏️')
               .setStyle(ButtonStyle.Success)
           )
       )
-      
-      // Tier Auswahldropdown
-      .addSection(
-        new SectionComponent()
-          .addComponents(
-            new TextDisplayBuilder()
-              .setContent('📊 **Tier Auswahl**\nWähle das Feature-Level deines Bots:')
-              .setStyle(TextDisplayStyle.Normal)
-          )
-          .addComponents(
-            new StringSelectMenuBuilder()
-              .setCustomId('select_tier')
-              .setPlaceholder('Wähle eine Bot-Kategorie')
-              .addOptions([
-                {
-                  label: 'Tier 1 - Basic',
-                  description: 'Grundfunktionen, Moderation, einfache Befehle',
-                  value: 'tier_basic',
-                  emoji: '⭐',
-                  default: true
-                },
-                {
-                  label: 'Tier 2 - Standard',
-                  description: 'Erweiterte Funktionen, Logs, Reaktionen, Wirtschaftssystem',
-                  value: 'tier_standard',
-                  emoji: '🌟'
-                },
-                {
-                  label: 'Tier 3 - Premium',
-                  description: 'Alle Features, Analytics, API-Integrationen, Prioritätssupport',
-                  value: 'tier_premium',
-                  emoji: '💎'
-                }
-              ])
-          )
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(true)
+          .setSpacing(SeparatorSpacingSize.Small)
+      )
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          '## 💎 Tier-Auswahl\nWähle anschließend dein Tier — **höhere Tiers = mehr Features & Funktionen**.'
+        )
+      )
+      .addActionRowComponents(
+        new ActionRowBuilder().addComponents(
+          new StringSelectMenuBuilder()
+            .setCustomId('shop_tier_select')
+            .setPlaceholder('🎯 Wähle dein Tier...')
+            .addOptions(
+              {
+                label: 'Tier 1 — Basic',
+                description: 'Perfekt für Einsteiger: Basis-Features',
+                value: 'tier_1',
+                emoji: '⭐'
+              },
+              {
+                label: 'Tier 2 — Advanced',
+                description: 'Mehr Features, Konfiguration & Extras',
+                value: 'tier_2',
+                emoji: '🌟'
+              },
+              {
+                label: 'Tier 3 — Premium',
+                description: 'Alle Features, volle Customization & Support',
+                value: 'tier_3',
+                emoji: '👑'
+              }
+            )
+        )
+      )
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(false)
+          .setSpacing(SeparatorSpacingSize.Small)
+      )
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          '-# ⚡ Sofortige Bearbeitung · 🔒 Sichere Abwicklung · 🛠️ Individuelle Anpassungen möglich'
+        )
       );
 
-    try {
-      await interaction.reply({
-        components: [botShopContainer],
-        ephemeral: true  // Nur der Nutzer sieht die Nachricht
-      });
-    } catch (error) {
-      console.error('Fehler beim Senden des Shops:', error);
-      await interaction.reply({
-        content: '❌ Ein Fehler ist aufgetreten. Bitte versuche es später erneut.',
-        ephemeral: true
-      });
-    }
+    await interaction.reply({
+      components: [botShopContainer],
+      flags: MessageFlags.IsComponentsV2
+    });
   }
-});t.login(process.env.DISCORD_BOT_TOKEN);
+});
+client.login(process.env.DISCORD_BOT_TOKEN);
