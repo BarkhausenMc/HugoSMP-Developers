@@ -14,7 +14,8 @@ const {
   TextInputBuilder,
   TextInputStyle,
   ButtonStyle,
-  TextDisplayComponent
+  TextDisplayComponent,
+  Sweepers
 } = require('discord.js');
 
 const client = new Client({
@@ -434,11 +435,16 @@ if (
   interaction.customId === 'discord_bot_modal'
 ) {
 
+  const standard_bot =
+    interaction.fields.getTextInputValue('standard_bots_modal') || 'Keiner';
+
   const wishes =
     interaction.fields.getTextInputValue('discord_bot_wishes');
 
   const ticketChannel =
-    interaction.guild.channels.cache.get(process.env.DISCORD_BOT_CHANNEL_ID);
+    interaction.guild.channels.cache.get(
+      process.env.DISCORD_BOT_CHANNEL_ID
+    );
 
   if (!ticketChannel) {
     return interaction.reply({
@@ -449,31 +455,76 @@ if (
 
   const thread = await ticketChannel.threads.create({
     name: `🤖 Discord Bot・${interaction.user.username}`,
-    autoArchiveDuration: 10080, 
+    autoArchiveDuration: 10080,
     type: ChannelType.PrivateThread,
     reason: `Discord Bot Bestellung von ${interaction.user.tag}`
   });
 
   await thread.members.add(interaction.user.id);
-  const supportRole = interaction.guild.roles.cache.get(process.env.DISCORD_BOT_ROLE_ID);
+
+  const supportRole = interaction.guild.roles.cache.get(
+    process.env.DISCORD_BOT_ROLE_ID
+  );
 
   if (supportRole) {
     for (const member of supportRole.members.values()) {
-      await thread.members.add(member.id);
+      try {
+        await thread.members.add(member.id);
+      } catch (error) {
+        console.error(
+          `Fehler beim Hinzufügen von ${member.user.tag}:`,
+          error
+        );
+      }
     }
   }
 
+  const ticketContainer = new ContainerBuilder()
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '# 🤖 Discord Bot Bestellung'
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `**👤 Kunde:** ${interaction.user.username}\n` +
+        `**🆔 User-ID:** \`${interaction.user.id}\``
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '### 🤖 Standard Bot\n' +
+        `> ${standard_bot}\n\n` +
+
+        '### 📝 Wünsche\n' +
+        `> ${wishes}`
+      )
+    );
+
   await thread.send({
-    content:
-      `# 🤖 Discord Bot Bestellung\n\n` +
-      `👤 **Kunde:** <@${interaction.user.id}>\n` +
-      `🆔 **User-ID:** \`${interaction.user.id}\`\n\n` +
-      `## 📝 Wünsche\n` +
-      `> ${wishes}\n\n` +
-      `━━━━━━━━━━━━━━━━━━━━\n` +
-      `📌 **Status:** Offen\n` +
-      `👨‍💻 Ein Entwickler wird sich hier bald bei dir melden.`
+    components: [ticketContainer],
+    flags: MessageFlags.IsComponentsV2
   });
+
+
+  // =========================
+  // Kunde bekommt Bestätigung
+  // =========================
 
   await interaction.reply({
     content:
@@ -484,6 +535,7 @@ if (
 
   return;
 }
+
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
