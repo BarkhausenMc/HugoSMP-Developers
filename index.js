@@ -398,7 +398,7 @@ client.on('interactionCreate', async (interaction) => {
 
     const hosting = new TextDisplayBuilder()
       .setCustomId('hosting_yes_or_no')
-      .setTitle('Möchtest du deinen Bot direkt bei uns Hosten?')
+      .setLabel('Möchtest du deinen Bot direkt bei uns Hosten?')
       .setPlaceholder('Ja oder Nein')
 
       .setStyle(TextInputStyle.Short)
