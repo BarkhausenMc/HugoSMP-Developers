@@ -392,10 +392,17 @@ client.on('interactionCreate', async (interaction) => {
     interaction.isButton() &&
     interaction.customId === 'discord_bot'
   ) {
-
     const modal = new ModalBuilder()
-      .setCustomId('discord_bot_modal')
+      .setCustomId('discord_bot')
       .setTitle('Discord Bot bestellen');
+
+    const hosting = new ModalBuilder()
+      .setCustomId('hosting_yes_or_no')
+      .setTitle('Möchtest du deinen Bot direkt bei uns Hosten?')
+      .setPlaceholder('Ja oder Nein')
+
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
 
     const standard_bot = new TextInputBuilder()
       .setCustomId('standard_bots_modal')
@@ -417,6 +424,7 @@ client.on('interactionCreate', async (interaction) => {
       .setMaxLength(4000);
 
     modal.addComponents(
+      new ActionRowBuilder().addComponents(hosting),
       new ActionRowBuilder().addComponents(standard_bot),
       new ActionRowBuilder().addComponents(wishesInput)
     );
@@ -435,6 +443,9 @@ if (
   interaction.customId === 'discord_bot_modal'
 ) {
 
+  const hosting =
+    interaction.fields.getTextInputValue('hosting_yes_or_no');
+  
   const standard_bot =
     interaction.fields.getTextInputValue('standard_bots_modal') || 'Kein Standard Bot angegeben.';
 
@@ -508,6 +519,9 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
+        '### Hosting\n' +
+        `> ${hosting}\n` +
+        
         '### 🤖 Standard Bot\n' +
         `> ${standard_bot}\n` +
 
