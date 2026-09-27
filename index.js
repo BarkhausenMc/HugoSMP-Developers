@@ -374,27 +374,67 @@ client.on('interactionCreate', async (interaction) => {
     return;
   }
 
-  // =========================
-  // Discord Bot Modal
-  // =========================
+// =========================
+// Discord Bot Modal
+// =========================
 
-  if (
-    interaction.isModalSubmit() &&
-    interaction.customId === 'discord_bot_modal'
-  ) {
+if (
+  interaction.isModalSubmit() &&
+  interaction.customId === 'discord_bot_modal'
+) {
 
-    const wishes =
-      interaction.fields.getTextInputValue('discord_bot_wishes');
+  const wishes =
+    interaction.fields.getTextInputValue('discord_bot_wishes');
 
-    await interaction.reply({
-      content:
-        '✅ **Deine Discord-Bot-Bestellung wurde erhalten!**\n\n' +
-        `**Deine Wünsche:**\n${wishes}`,
+  const ticketChannel =
+    interaction.guild.channels.cache.get(process.env.DISCORD_BOT_CHANNEL_ID);
+
+  if (!ticketChannel) {
+    return interaction.reply({
+      content: '❌ Der Ticket-Channel wurde nicht gefunden.',
       flags: MessageFlags.Ephemeral
     });
-
-    return;
   }
+
+  // Thread erstellen
+  const thread = await ticketChannel.threads.create({
+    name: `🤖 Discord Bot・${interaction.user.username}`,
+    autoArchiveDuration: 10080, 
+    type: ChannelType.PrivateThread,
+    reason: `Discord Bot Bestellung von ${interaction.user.tag}`
+  });
+
+  // User zum privaten Thread hinzufügen
+  await thread.members.add(interaction.user.id);
+  const supportRole = interaction.guild.roles.cache.get(process.env.DISCORD_BOT_ROLE_ID);
+
+  if (supportRole) {
+    for (const member of supportRole.members.values()) {
+      await thread.members.add(member.id);
+    }
+  }
+
+  await thread.send({
+    content:
+      `# 🤖 Discord Bot Bestellung\n\n` +
+      `👤 **Kunde:** <@${interaction.user.id}>\n` +
+      `🆔 **User-ID:** \`${interaction.user.id}\`\n\n` +
+      `## 📝 Wünsche\n` +
+      `> ${wishes}\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `📌 **Status:** Offen\n` +
+      `👨‍💻 Ein Entwickler wird sich hier bald bei dir melden.`
+  });
+
+  await interaction.reply({
+    content:
+      `✅ **Deine Bestellung wurde erfolgreich erstellt!**\n\n` +
+      `🎫 Dein Ticket: <#${thread.id}>`,
+    flags: MessageFlags.Ephemeral
+  });
+
+  return;
+}
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
