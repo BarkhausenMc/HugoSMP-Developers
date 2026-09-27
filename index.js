@@ -13,7 +13,8 @@ const {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
-  ButtonStyle
+  ButtonStyle,
+  TextDisplayComponent
 } = require('discord.js');
 
 const client = new Client({
@@ -258,12 +259,9 @@ client.on('interactionCreate', async (interaction) => {
           new TextDisplayBuilder().setContent(
             '## 🤖 Standard Bots\n' +
             '> Du möchtest einen Bot für einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
-            '> Wähle einfach die passende Kategorie für deinen **Discord Bot** oder **Mineflayer Bot** und schreibe darunter deine individuellen Wünsche.\n' +
-
-            '## ⛏️ Mineflayer/AFK Bots\n\n' +
-
-            '> Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird?\n' +
-            '> Dann schau auf folgender Website vorbei: [hugosmp AFK](https://deine-webseite.de)'
+            '> Wähle einfach die passende Kategorie für deinen **Discord Bot** und schreibe darunter deine individuellen Wünsche.\n' +
+            '> Du kannst dir unsere Standard Bots über den `Standard Bots` Button anzeigen lassen.\n' +
+            '> Falls dein Bot Wunsch dabei ist, schreibe einfach mit beim erstellen deines Tickets den angegeben namen dazu. Z.B. `ticket_bot`'
           )
         )
 
@@ -282,6 +280,20 @@ client.on('interactionCreate', async (interaction) => {
             .setSpacing(1)
         )
 
+        .addTextDisplayComponent(
+          new TextDisplayBuilder().setContent(
+            '## ⛏️ Mineflayer/AFK Bots\n\n' +
+
+            '> Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird?\n' +
+            '> Dann schau auf folgender Website vorbei: [hugosmp AFK](https://deine-webseite.de)'
+          )
+        )
+
+        .addSeparatorComponents(
+          new SeparatorBuilder()
+            .setDivider(true)
+            .setSpacing(1)
+        )
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## Bot Typ Wählen:\n' +
