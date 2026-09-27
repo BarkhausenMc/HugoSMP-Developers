@@ -285,10 +285,10 @@ client.on('interactionCreate', async (interaction) => {
 
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
-            '# 💵 Unsere Preise\n' +
-            '> 🖥️ Hosting <--- 10M pro Monat, 100 pro Jahr\n' +
+            '## 💵 Unsere Preise\n' +
+            '> 🖥️ Hosting <--- 10M pro Monat, 100M pro Jahr\n' +
             '> 🤖 Custom Discord Bot <--- Preis Verhandelbar, mindest Preis pro Bot 5M\n' +
-            '> Preise für die Standard Bots sichbar über den `Standard Bots` Button.'
+            '> Preise für die Standard Bots sichbar über den `Standard Bots` Button'
           )
         )
 
@@ -375,16 +375,16 @@ client.on('interactionCreate', async (interaction) => {
       new TextDisplayBuilder().setContent(
         '## 💬 Discord Bots\n' +
 
-        '🎫 **Ticket / Support Bot** — `ticket_bot`\n' +
+        '🎫 **Ticket / Support Bot** — `ticket_bot`, Preis: 15M\n' +
         '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
 
-        '🎁 **Giveaway Bot** — `giveaway_bot`\n' +
+        '🎁 **Giveaway Bot** — `giveaway_bot`, Preis: 5M\n' +
         '> Giveaways erstellen, Teilnahmebedingungen, automatische Gewinnerauslosung und Belohnungen.\n\n' +
 
-        '👋 **Welcome Bot** — `welcome_bot`\n' +
+        '👋 **Welcome Bot** — `welcome_bot`, Preis: 7.5M\n' +
         '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
 
-        '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
+        '🤖 **Custom Discord Bot** — `custom_discord_bot`, Preis: mind. 5M\n' +
         '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
 
         '💡 **Beispiel für eine Bestellung:**\n' +
@@ -421,6 +421,14 @@ client.on('interactionCreate', async (interaction) => {
       .setStyle(TextInputStyle.Short)
       .setRequired(true);
 
+    const duration = new TextInputBuilder()
+      .setCustomId('hosting_duration')
+      .setLabel('Wie lange möchtest du dein Bot Hosten lassen?')
+      .setPlaceholder('z.B. 3 Monate, 1 Jahr')
+
+      .setStyle(TextInputStyle.Short)
+      .setRequired(false);
+
     const standard_bot = new TextInputBuilder()
       .setCustomId('standard_bots_modal')
       .setLabel('Wie lautet der Namen des Standard Bots?')
@@ -436,11 +444,12 @@ client.on('interactionCreate', async (interaction) => {
         'Beschreibe hier möglichst genau deine Wünsche...'
       )
       .setStyle(TextInputStyle.Paragraph)
-      .setRequired(false)
+      .setRequired(true)
       .setMinLength(0)
       .setMaxLength(4000);
 
     modal.addComponents(
+      new ActionRowBuilder().addComponents(duration),
       new ActionRowBuilder().addComponents(hosting),
       new ActionRowBuilder().addComponents(standard_bot),
       new ActionRowBuilder().addComponents(wishesInput)
@@ -459,6 +468,9 @@ if (
   interaction.isModalSubmit() &&
   interaction.customId === 'discord_bot_modal'
 ) {
+
+  const duration =
+    interaction.fields.getTextInputValue('hosting_duration');
 
   const hosting =
     interaction.fields.getTextInputValue('hosting_yes_or_no');
@@ -538,6 +550,7 @@ if (
       new TextDisplayBuilder().setContent(
         '### 🖥️ Hosting\n' +
         `> ${hosting}\n` +
+        `> ${duration}\n` +
         
         '### 🤖 Standard Bot\n' +
         `> ${standard_bot}\n` +
