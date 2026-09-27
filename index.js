@@ -248,6 +248,12 @@ client.on('interactionCreate', async (interaction) => {
           )
         )
 
+        .addSeparatorComponents(
+          new SeparatorBuilder()
+            .setDivider(true)
+            .setSpacing(1)
+        )
+
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## 🤖 Standard Bots\n' +
@@ -265,31 +271,13 @@ client.on('interactionCreate', async (interaction) => {
             '👋 **Welcome Bot** — `welcome_bot`\n' +
             '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
 
-            '📊 **Logging Bot** — `logging_bot`\n' +
-            '> Nachrichten-, Member-, Moderations-, Voice- und Server-Logs.\n\n' +
-
-            '📈 **Leveling Bot** — `leveling_bot`\n' +
-            '> XP-System, Level, Ranglisten, Level-Rollen und individuelle Belohnungen.\n\n' +
-
-            '🔧 **Utility Bot** — `utility_bot`\n' +
-            '> Reminders, Informationen, Utility-Commands und verschiedene hilfreiche Funktionen.\n\n' +
-
             '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
             '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
 
             '## ⛏️ Mineflayer Bots\n\n' +
 
-            '🌐 **Server Bot** — `mineflayer_server_bot`\n' +
-            '> Ein Bot, der automatisch einem Minecraft-Server beitritt und verschiedene Aufgaben übernimmt.\n\n' +
-
-            '💬 **Chat Bot** — `mineflayer_chat_bot`\n' +
-            '> Automatisierte Chat-Nachrichten, Antworten auf Befehle und Interaktionen mit Spielern.\n\n' +
-
             '🛡️ **AFK Bot** — `mineflayer_afk_bot`\n' +
-            '> Bleibt dauerhaft auf dem Server und kann beispielsweise als AFK- oder Status-Bot eingesetzt werden.\n\n' +
-
-            '🌾 **Farming Bot** — `mineflayer_farming_bot`\n' +
-            '> Automatisiertes Farmen z.b. durch Sell-Makros.\n\n' +
+            '> Bleibt dauerhaft auf dem Server und kann beispielsweise durch Commands über die Konsole Bedient werden.\n\n' +
 
             '🤖 **Custom Mineflayer Bot** — `custom_mineflayer_bot`\n' +
             '> Du hast eine eigene Idee für einen Minecraft-Bot? Beschreibe genau, welche Aufgaben dein Bot übernehmen soll.\n\n' +
