@@ -307,7 +307,6 @@ client.on('interactionCreate', async (interaction) => {
               .setStyle(ButtonStyle.Secondary),
 
             new ButtonBuilder()
-              .setCustomId('mineflayer_bot')
               .setLabel('Mineflayer Bot')
               .setEmoji('⛏️')
               .setStyle(ButtonStyle.Link)
