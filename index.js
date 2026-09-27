@@ -260,31 +260,22 @@ client.on('interactionCreate', async (interaction) => {
             '> Du möchtest einen Bot für einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
             '> Wähle einfach die passende Kategorie für deinen **Discord Bot** oder **Mineflayer Bot** und schreibe darunter deine individuellen Wünsche.\n' +
 
-            '## 💬 Discord Bots\n' +
+            '## ⛏️ Mineflayer/AFK Bots\n\n' +
 
-            '🎫 **Ticket / Support Bot** — `ticket_bot`\n' +
-            '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
-
-            '🎁 **Giveaway Bot** — `giveaway_bot`\n' +
-            '> Giveaways erstellen, Teilnahmebedingungen, automatische Gewinnerauslosung und Belohnungen.\n\n' +
-
-            '👋 **Welcome Bot** — `welcome_bot`\n' +
-            '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
-
-            '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
-            '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
-
-          '## ⛏️ Mineflayer/AFK Bots\n\n' +
-
-          '> Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird?\n' +
-          '> Dann schau auf folgender Website vorbei: [hugosmp AFK](https://deine-webseite.de)\n\n' +
-
-
-            '💡 **Beispiel für eine Bestellung:**\n' +
-            '> `ticket_bot`\n' +
-            '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.' 
+            '> Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird?\n' +
+            '> Dann schau auf folgender Website vorbei: [hugosmp AFK](https://deine-webseite.de)'
           )
         )
+
+        .addActionRowComponents(
+          new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+              .setCustomId('categories')
+              .setLabel('Kategorien')
+              .setStyle(ButtonStyle.Secondary)
+          )
+        )
+
         .addSeparatorComponents(
           new SeparatorBuilder()
             .setDivider(true)
@@ -340,6 +331,42 @@ client.on('interactionCreate', async (interaction) => {
     return;
   }
 
+  // =========================
+  // Discord Bot Button
+  // =========================
+
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'categories'
+  ) {
+    const categoriesContainer = new ContainerBuilder(
+      new TextDisplayBuilder().setContent(
+        '## 💬 Discord Bots\n' +
+
+          '🎫 **Ticket / Support Bot** — `ticket_bot`\n' +
+          '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
+
+          '🎁 **Giveaway Bot** — `giveaway_bot`\n' +
+          '> Giveaways erstellen, Teilnahmebedingungen, automatische Gewinnerauslosung und Belohnungen.\n\n' +
+
+          '👋 **Welcome Bot** — `welcome_bot`\n' +
+          '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
+
+          '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
+          '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
+
+          '💡 **Beispiel für eine Bestellung:**\n' +
+          '> `ticket_bot`\n' +
+          '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.\n\n' 
+      ),
+
+        await interaction.reply({
+        components: [categoriesContainer],
+        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+      })
+
+    )
+};
 
   // =========================
   // Discord Bot Button
@@ -396,7 +423,6 @@ if (
     });
   }
 
-  // Thread erstellen
   const thread = await ticketChannel.threads.create({
     name: `🤖 Discord Bot・${interaction.user.username}`,
     autoArchiveDuration: 10080, 
@@ -404,7 +430,6 @@ if (
     reason: `Discord Bot Bestellung von ${interaction.user.tag}`
   });
 
-  // User zum privaten Thread hinzufügen
   await thread.members.add(interaction.user.id);
   const supportRole = interaction.guild.roles.cache.get(process.env.DISCORD_BOT_ROLE_ID);
 
