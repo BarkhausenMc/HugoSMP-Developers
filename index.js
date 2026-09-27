@@ -12,7 +12,8 @@ const {
   ButtonBuilder,
   ModalBuilder,
   TextInputBuilder,
-  TextInputStyle
+  TextInputStyle,
+  ButtonStyle
 } = require('discord.js');
 
 const client = new Client({
@@ -222,72 +223,110 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
-client.on('interactionCreate', async (interaction) =>{
-  if (!interaction.isChatInputCommand()) return;
+client.on('interactionCreate', async (interaction) => {
+  // =========================
+  // Slash Commands
+  // =========================
 
-  if (interaction.commandName === 'bot-shop') {
-    const botShopContainer = new ContainerBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-              '# 🛒 HugoSMP Developers — Bot Shop\n' +
-              '## 📖 So funktioniert der Bot Shop\n' +
-              '### 1. Bot-Typ auswählen\n' +
-              '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
-              '### 2. Bestellung konfigurieren\n' +
-              '> Schreibe nun deine Wünsche für dein Bot in das Feld.\n> Tipp: Sei sehr Genau bei der Beschreinug deiner Wünsche.'
-        )
-      )
-      .addSeparatorComponents(
-        new SeparatorBuilder()
-          .setDivider(true)
-          .setSpacing(1)
-      )
-      .addActionRowComponents(
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId('discord_bot')
-            .setLabel('Discord Bot')
-            .setEmoji('🤖')
-            .setStyle(ButtonStyle.Primary),
+  if (interaction.isChatInputCommand()) {
 
-          new ButtonBuilder()
-            .setCustomId('mineflayer_bot')
-            .setLabel('Mineflayer Bot')
-            .setEmoji('⛏️')
-            .setStyle(ButtonStyle.Primary)  
+    // =========================
+    // /bot-shop
+    // =========================
+
+    if (interaction.commandName === 'bot-shop') {
+      const botShopContainer = new ContainerBuilder()
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            '# 🛒 HugoSMP Developers — Bot Shop\n' +
+            '## 📖 So funktioniert der Bot Shop\n' +
+            '### 1. Bot-Typ auswählen\n' +
+            '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n\n' +
+            '### 2. Bestellung konfigurieren\n' +
+            '> Schreibe nun deine Wünsche für deinen Bot in das Feld.\n' +
+            '> Tipp: Sei sehr genau bei der Beschreibung deiner Wünsche.'
+          )
         )
-      );
-    await interaction.reply({
-    components: [botShopContainer],
-    flags: MessageFlags.IsComponentsV2
-    });
+
+        .addSeparatorComponents(
+          new SeparatorBuilder()
+            .setDivider(true)
+            .setSpacing(1)
+        )
+
+        .addActionRowComponents(
+          new ActionRowBuilder().addComponents(
+
+            new ButtonBuilder()
+              .setCustomId('discord_bot')
+              .setLabel('Discord Bot')
+              .setEmoji('🤖')
+              .setStyle(ButtonStyle.Primary),
+
+            new ButtonBuilder()
+              .setCustomId('mineflayer_bot')
+              .setLabel('Mineflayer Bot')
+              .setEmoji('⛏️')
+              .setStyle(ButtonStyle.Primary)
+
+          )
+        );
+
+      await interaction.reply({
+        components: [botShopContainer],
+        flags: MessageFlags.IsComponentsV2
+      });
+
+      return;
+    }
+
+    return;
   }
-  return;
-});
 
-if (interaction.isButton() && interaction.setCustomId === 'discord_bot') {
-  const modal = new ModalBuilder()
-    .setCustomId('discord_bot_modal')
-    .setTitle('Discord Bot bestellen');
+
+  // =========================
+  // Discord Bot Button
+  // =========================
+
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'discord_bot'
+  ) {
+
+    const modal = new ModalBuilder()
+      .setCustomId('discord_bot_modal')
+      .setTitle('Discord Bot bestellen');
 
     const wishesInput = new TextInputBuilder()
       .setCustomId('discord_bot_wishes')
       .setLabel('Was soll dein Discord Bot können?')
-      .setPlaceholder('Beschreibe hier möglichst genau deine Wünsche...')
-
+      .setPlaceholder(
+        'Beschreibe hier möglichst genau deine Wünsche...'
+      )
       .setStyle(TextInputStyle.Paragraph)
       .setRequired(true)
       .setMinLength(100)
-      .setMaxLength(5000);
+      .setMaxLength(4000);
 
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(wishesInput)
-      );
+    modal.addComponents(
+      new ActionRowBuilder().addComponents(wishesInput)
+    );
 
-      await interaction.showModal(modal);
-}
+    await interaction.showModal(modal);
 
-  if (interaction.isButton() && interaction.customId === 'mineflayer_bot') {
+    return;
+  }
+
+
+  // =========================
+  // Mineflayer Bot Button
+  // =========================
+
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'mineflayer_bot'
+  ) {
+
     const modal = new ModalBuilder()
       .setCustomId('mineflayer_bot_modal')
       .setTitle('Mineflayer Bot bestellen');
@@ -295,26 +334,35 @@ if (interaction.isButton() && interaction.setCustomId === 'discord_bot') {
     const wishesInput = new TextInputBuilder()
       .setCustomId('mineflayer_bot_wishes')
       .setLabel('Was soll dein Mineflayer Bot können?')
-      .setPlaceholder('Beschreibe hier möglichst genau deine Wünsche...')
-
+      .setPlaceholder(
+        'Beschreibe hier möglichst genau deine Wünsche...'
+      )
       .setStyle(TextInputStyle.Paragraph)
       .setRequired(true)
       .setMinLength(100)
-      .setMaxLength(5000);
+      .setMaxLength(4000);
 
     modal.addComponents(
       new ActionRowBuilder().addComponents(wishesInput)
     );
 
     await interaction.showModal(modal);
+
+    return;
   }
 
+
+  // =========================
+  // Discord Bot Modal
+  // =========================
 
   if (
     interaction.isModalSubmit() &&
     interaction.customId === 'discord_bot_modal'
   ) {
-    const wishes = interaction.fields.getTextInputValue('discord_bot_wishes');
+
+    const wishes =
+      interaction.fields.getTextInputValue('discord_bot_wishes');
 
     await interaction.reply({
       content:
@@ -322,14 +370,22 @@ if (interaction.isButton() && interaction.setCustomId === 'discord_bot') {
         `**Deine Wünsche:**\n${wishes}`,
       flags: MessageFlags.Ephemeral
     });
+
+    return;
   }
 
-  // Mineflayer Bot Bestellung abgeschickt
+
+  // =========================
+  // Mineflayer Bot Modal
+  // =========================
+
   if (
     interaction.isModalSubmit() &&
     interaction.customId === 'mineflayer_bot_modal'
   ) {
-    const wishes = interaction.fields.getTextInputValue('mineflayer_bot_modal');
+
+    const wishes =
+      interaction.fields.getTextInputValue('mineflayer_bot_wishes');
 
     await interaction.reply({
       content:
@@ -337,5 +393,9 @@ if (interaction.isButton() && interaction.setCustomId === 'discord_bot') {
         `**Deine Wünsche:**\n${wishes}`,
       flags: MessageFlags.Ephemeral
     });
+
+    return;
   }
+});
+
 client.login(process.env.DISCORD_BOT_TOKEN);
