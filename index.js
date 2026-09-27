@@ -412,7 +412,7 @@ client.on('interactionCreate', async (interaction) => {
         'Beschreibe hier möglichst genau deine Wünsche...'
       )
       .setStyle(TextInputStyle.Paragraph)
-      .setRequired(true)
+      .setRequired(false)
       .setMinLength(0)
       .setMaxLength(4000);
 
@@ -436,10 +436,10 @@ if (
 ) {
 
   const standard_bot =
-    interaction.fields.getTextInputValue('standard_bots_modal') || 'Keiner';
+    interaction.fields.getTextInputValue('standard_bots_modal') || 'Kein Standard Bot angegeben.';
 
   const wishes =
-    interaction.fields.getTextInputValue('discord_bot_wishes');
+    interaction.fields.getTextInputValue('discord_bot_wishes') || 'Keine weiteren Wünsche angegeben.';
 
   const ticketChannel =
     interaction.guild.channels.cache.get(
@@ -509,13 +509,24 @@ if (
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
         '### 🤖 Standard Bot\n' +
-        `> ${standard_bot}\n\n` +
+        `> ${standard_bot}\n` +
 
         '### 📝 Wünsche\n' +
         `> ${wishes}`
       )
-    );
+    )
 
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `||<@&${process.env.DISCORD_BOT_ROLE_ID}>, ${interaction.user.username} hat einene neuen Discord Bot angefordert.||`
+      )
+    )
   await thread.send({
     components: [ticketContainer],
     flags: MessageFlags.IsComponentsV2
