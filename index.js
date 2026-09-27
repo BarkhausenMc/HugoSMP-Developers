@@ -244,7 +244,7 @@ client.on('interactionCreate', async (interaction) => {
             '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
             '### 2. Bestellung konfigurieren\n' +
             '> Schreibe nun deine Wünsche für deinen Bot in das Feld.\n' +
-            '> Tipp: Sei sehr genau bei der Beschreibung deiner Wünsche.'
+            '> **Tipp:** Je genauer du deine Wünsche beschreibst, desto besser können wir deinen Bot nach deinen Vorstellungen entwickeln.'
           )
         )
 
@@ -284,9 +284,7 @@ client.on('interactionCreate', async (interaction) => {
 
             '💡 **Beispiel für eine Bestellung:**\n' +
             '> `ticket_bot`\n' +
-            '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.\n\n' +
-
-            '> **Tipp:** Je genauer du deine Wünsche beschreibst, desto besser können wir deinen Bot nach deinen Vorstellungen entwickeln.'
+            '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.' 
           )
         )
         .addSeparatorComponents(
