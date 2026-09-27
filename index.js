@@ -230,7 +230,7 @@ client.on('interactionCreate', async (interaction) => {
       .addSeparatorComponents(
         new SeparatorBuilder()
           .setDivider(true)
-          .setSpacing(SeparatorSpacingSize.Large)
+          .setSpacing(1)
       )
       .addSectionComponents(
         new SectionBuilder()
@@ -265,7 +265,7 @@ client.on('interactionCreate', async (interaction) => {
       .addSeparatorComponents(
         new SeparatorBuilder()
           .setDivider(true)
-          .setSpacing(SeparatorSpacingSize.Small)
+          .setSpacing(1)
       )
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
@@ -301,8 +301,8 @@ client.on('interactionCreate', async (interaction) => {
       )
       .addSeparatorComponents(
         new SeparatorBuilder()
-          .setDivider(false)
-          .setSpacing(SeparatorSpacingSize.Small)
+          .setDivider(true)
+          .setSpacing(1)
       )
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
