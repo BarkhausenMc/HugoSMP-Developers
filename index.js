@@ -483,7 +483,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        '# 🤖 Discord Bot Bestellung'
+        '#✅ Discord Bot Bestellung'
       )
     )
 
@@ -524,7 +524,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert.||`
+        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert!||`
       )
     )
   await thread.send({
