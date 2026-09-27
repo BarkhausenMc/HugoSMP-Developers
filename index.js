@@ -254,6 +254,12 @@ client.on('interactionCreate', async (interaction) => {
             .setSpacing(1)
         )
 
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            '## Wähle über die Buttons welche art von Bot du bekommen möchtest.'
+          )
+        )
+
         .addActionRowComponents(
           new ActionRowBuilder().addComponents(
 
@@ -261,13 +267,13 @@ client.on('interactionCreate', async (interaction) => {
               .setCustomId('discord_bot')
               .setLabel('Discord Bot')
               .setEmoji('🤖')
-              .setStyle(ButtonStyle.Primary),
+              .setStyle(ButtonStyle.Secondary),
 
             new ButtonBuilder()
               .setCustomId('mineflayer_bot')
               .setLabel('Mineflayer Bot')
               .setEmoji('⛏️')
-              .setStyle(ButtonStyle.Primary)
+              .setStyle(ButtonStyle.Secondary)
 
           )
         );
