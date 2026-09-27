@@ -483,7 +483,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        '#✅ Discord Bot Bestellung'
+        '# ✅ Discord Bot Bestellung'
       )
     )
 
