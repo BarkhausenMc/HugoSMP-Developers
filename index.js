@@ -243,7 +243,7 @@ client.on('interactionCreate', async (interaction) => {
             '### 1. Bot-Typ auswählen\n' +
             '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
             '### 2. Bestellung konfigurieren\n' +
-            '> Schreibe nun deine Wünsche für deinen Bot in das Feld.\n' +
+            '> Beschreibe nun deine Wünsche für deinen Bot.\n' +
             '> **Tipp:** Je genauer du deine Wünsche beschreibst, desto besser können wir deinen Bot nach deinen Vorstellungen entwickeln.'
           )
         )
@@ -251,16 +251,16 @@ client.on('interactionCreate', async (interaction) => {
         .addSeparatorComponents(
           new SeparatorBuilder()
             .setDivider(true)
-            .setSpacing(1)
+            .setSpacing(2)
         )
 
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## 🤖 Standard Bots\n' +
             '> Du möchtest einen Bot für einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
-            '> Wähle einfach die passende Kategorie für deinen **Discord Bot** oder **Mineflayer Bot** und schreibe darunter deine individuellen Wünsche.\n\n' +
+            '> Wähle einfach die passende Kategorie für deinen **Discord Bot** oder **Mineflayer Bot** und schreibe darunter deine individuellen Wünsche.\n' +
 
-            '## 💬 Discord Bots\n\n' +
+            '## 💬 Discord Bots\n' +
 
             '🎫 **Ticket / Support Bot** — `ticket_bot`\n' +
             '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
