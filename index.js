@@ -274,13 +274,10 @@ client.on('interactionCreate', async (interaction) => {
             '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
             '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
 
-            '## ⛏️ Mineflayer Bots\n\n' +
+          '## ⛏️ Mineflayer Bots\n\n' +
 
-            '🛡️ **AFK Bot** — `mineflayer_afk_bot`\n' +
-            '> Bleibt dauerhaft auf dem Server und kann beispielsweise durch Commands über die Konsole Bedient werden.\n\n' +
+          'Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird? Dann schau auf folgender Website vorbei: [Website](https://deine-webseite.de)\n' +
 
-            '🤖 **Custom Mineflayer Bot** — `custom_mineflayer_bot`\n' +
-            '> Du hast eine eigene Idee für einen Minecraft-Bot? Beschreibe genau, welche Aufgaben dein Bot übernehmen soll.\n\n' +
 
             '💡 **Beispiel für eine Bestellung:**\n' +
             '> `ticket_bot`\n' +
@@ -313,7 +310,8 @@ client.on('interactionCreate', async (interaction) => {
               .setCustomId('mineflayer_bot')
               .setLabel('Mineflayer Bot')
               .setEmoji('⛏️')
-              .setStyle(ButtonStyle.Secondary)
+              .setStyle(ButtonStyle.Link)
+              .setURL('https://deine-webseite.de')
 
           )
         );
@@ -363,41 +361,6 @@ client.on('interactionCreate', async (interaction) => {
     return;
   }
 
-
-  // =========================
-  // Mineflayer Bot Button
-  // =========================
-
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'mineflayer_bot'
-  ) {
-
-    const modal = new ModalBuilder()
-      .setCustomId('mineflayer_bot_modal')
-      .setTitle('Mineflayer Bot bestellen');
-
-    const wishesInput = new TextInputBuilder()
-      .setCustomId('mineflayer_bot_wishes')
-      .setLabel('Was soll dein Mineflayer Bot können?')
-      .setPlaceholder(
-        'Beschreibe hier möglichst genau deine Wünsche...'
-      )
-      .setStyle(TextInputStyle.Paragraph)
-      .setRequired(true)
-      .setMinLength(100)
-      .setMaxLength(4000);
-
-    modal.addComponents(
-      new ActionRowBuilder().addComponents(wishesInput)
-    );
-
-    await interaction.showModal(modal);
-
-    return;
-  }
-
-
   // =========================
   // Discord Bot Modal
   // =========================
@@ -413,29 +376,6 @@ client.on('interactionCreate', async (interaction) => {
     await interaction.reply({
       content:
         '✅ **Deine Discord-Bot-Bestellung wurde erhalten!**\n\n' +
-        `**Deine Wünsche:**\n${wishes}`,
-      flags: MessageFlags.Ephemeral
-    });
-
-    return;
-  }
-
-
-  // =========================
-  // Mineflayer Bot Modal
-  // =========================
-
-  if (
-    interaction.isModalSubmit() &&
-    interaction.customId === 'mineflayer_bot_modal'
-  ) {
-
-    const wishes =
-      interaction.fields.getTextInputValue('mineflayer_bot_wishes');
-
-    await interaction.reply({
-      content:
-        '✅ **Deine Mineflayer-Bot-Bestellung wurde erhalten!**\n\n' +
         `**Deine Wünsche:**\n${wishes}`,
       flags: MessageFlags.Ephemeral
     });
