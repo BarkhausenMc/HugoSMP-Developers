@@ -495,7 +495,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `**👤 Kunde:** ${interaction.user.username}\n` +
+        `**👤 Kunde:** \`${interaction.user.username}\`\n` +
         `**🆔 User-ID:** \`${interaction.user.id}\``
       )
     )
@@ -524,7 +524,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `||<@&${process.env.DISCORD_BOT_ROLE_ID}>, ${interaction.user.username} hat einene neuen Discord Bot angefordert.||`
+        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert.||`
       )
     )
   await thread.send({
