@@ -325,7 +325,7 @@ client.on('interactionCreate', async (interaction) => {
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## ❓ Fragen\n\n' +
-            'Wenn du eine Frage zu den Discord Bots hast, dann stelle sie einfach im #❓・bot-questions Channel.'
+            '> Wenn du eine Frage zu den Discord Bots hast,\n dann stelle sie einfach im **#❓・bot-questions** Channel.'
           )
         )
 
