@@ -335,37 +335,39 @@ client.on('interactionCreate', async (interaction) => {
   // Discord Bot Button
   // =========================
 
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'categories'
-  ) {
-    const categoriesContainer = new ContainerBuilder(
+ if (
+  interaction.isButton() &&
+  interaction.customId === 'categories'
+) {
+  const categoriesContainer = new ContainerBuilder()
+    .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
         '## 💬 Discord Bots\n' +
 
-          '🎫 **Ticket / Support Bot** — `ticket_bot`\n' +
-          '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
+        '🎫 **Ticket / Support Bot** — `ticket_bot`\n' +
+        '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
 
-          '🎁 **Giveaway Bot** — `giveaway_bot`\n' +
-          '> Giveaways erstellen, Teilnahmebedingungen, automatische Gewinnerauslosung und Belohnungen.\n\n' +
+        '🎁 **Giveaway Bot** — `giveaway_bot`\n' +
+        '> Giveaways erstellen, Teilnahmebedingungen, automatische Gewinnerauslosung und Belohnungen.\n\n' +
 
-          '👋 **Welcome Bot** — `welcome_bot`\n' +
-          '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
+        '👋 **Welcome Bot** — `welcome_bot`\n' +
+        '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
 
-          '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
-          '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
+        '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
+        '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
 
-          '💡 **Beispiel für eine Bestellung:**\n' +
-          '> `ticket_bot`\n' +
-          '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.\n\n' 
-      ),
-   )
+        '💡 **Beispiel für eine Bestellung:**\n' +
+        '> `ticket_bot`\n' +
+        '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.'
+      )
+    );
 
-      await interaction.reply({
-        components: [categoriesContainer],
-        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-      });
+  await interaction.reply({
+    components: [categoriesContainer],
+    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+  });
 }
+
 
 
   // =========================
