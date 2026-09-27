@@ -227,9 +227,9 @@ client.on('interactionCreate', async (interaction) =>{
               '# 🛒 HugoSMP Developers — Bot Shop\n' +
               '## 📖 So funktioniert der Bot Shop\n' +
               '### 1. Bot-Typ auswählen\n' +
-              'Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
+              '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.' +
               '### 2. Bestellung konfigurieren\n' +
-              'Schreibe nun deine Wünsche für dein Bot in das Feld.\nTipp: Sei sehr Genau bei der Beschreinug deiner Wünsche.'
+              '> Schreibe nun deine Wünsche für dein Bot in das Feld.\nTipp: Sei sehr Genau bei der Beschreinug deiner Wünsche.'
         )
       )
       .addSeparatorComponents(
