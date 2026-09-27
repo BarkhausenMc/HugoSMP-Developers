@@ -393,7 +393,7 @@ client.on('interactionCreate', async (interaction) => {
     interaction.customId === 'discord_bot'
   ) {
     const modal = new ModalBuilder()
-      .setCustomId('discord_bot')
+      .setCustomId('discord_bot_modal')
       .setTitle('Discord Bot bestellen');
 
     const hosting = new TextInputBuilder()
