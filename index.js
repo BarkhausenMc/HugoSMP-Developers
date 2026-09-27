@@ -274,7 +274,7 @@ client.on('interactionCreate', async (interaction) => {
             '🤖 **Custom Discord Bot** — `custom_discord_bot`\n' +
             '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
 
-          '## ⛏️ Mineflayer Bots\n\n' +
+          '## ⛏️ Mineflayer/AFK Bots\n\n' +
 
           '> Du möchtest einen eigenen pro­fes­si­o­nellen Mineflayer-Bot, der auch direkt gehostet wird?\n' +
           '> Dann schau auf folgender Website vorbei: [hugosmp AFK](https://deine-webseite.de)\n\n' +
@@ -308,13 +308,26 @@ client.on('interactionCreate', async (interaction) => {
               .setStyle(ButtonStyle.Secondary),
 
             new ButtonBuilder()
-              .setLabel('Mineflayer Bot')
+              .setLabel('hugosmp AFK')
               .setEmoji('⛏️')
               .setStyle(ButtonStyle.Link)
               .setURL('https://deine-webseite.de')
 
           )
-        );
+        )
+
+        .addSeparatorComponents(
+          new SeparatorBuilder()
+            .setDivider(true)
+            .setSpacing(1)
+        )
+
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            '## ❓ Fragen\n\n' +
+            'Wenn du eine Frage zu den Discord Bots hast, dann stelle sie einfach im #❓・bot-questions Channel.'
+          )
+        )
 
       await interaction.reply({
         components: [botShopContainer],
