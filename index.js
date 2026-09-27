@@ -359,14 +359,14 @@ client.on('interactionCreate', async (interaction) => {
           '> `ticket_bot`\n' +
           '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.\n\n' 
       ),
+   )
 
-        await interaction.reply({
+      await interaction.reply({
         components: [categoriesContainer],
         flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-      })
+      });
+}
 
-    )
-};
 
   // =========================
   // Discord Bot Button
