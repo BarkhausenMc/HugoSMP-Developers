@@ -7,7 +7,12 @@ const {
   ContainerBuilder,
   TextDisplayBuilder,
   SeparatorBuilder,
-  MessageFlags
+  MessageFlags,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle
 } = require('discord.js');
 
 const client = new Client({
@@ -227,13 +232,9 @@ client.on('interactionCreate', async (interaction) =>{
               '# 🛒 HugoSMP Developers — Bot Shop\n' +
               '## 📖 So funktioniert der Bot Shop\n' +
               '### 1. Bot-Typ auswählen\n' +
-              '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.' 
-        )
-      )
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          '### 2. Bestellung konfigurieren\n' +
-          '> Schreibe nun deine Wünsche für dein Bot in das Feld.\n> Tipp: Sei sehr Genau bei der Beschreinug deiner Wünsche.'
+              '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
+              '### 2. Bestellung konfigurieren\n' +
+              '> Schreibe nun deine Wünsche für dein Bot in das Feld.\n> Tipp: Sei sehr Genau bei der Beschreinug deiner Wünsche.'
         )
       )
       .addSeparatorComponents(
@@ -241,10 +242,100 @@ client.on('interactionCreate', async (interaction) =>{
           .setDivider(true)
           .setSpacing(1)
       )
+      .addActionRowComponents(
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('discord_bot')
+            .setLabel('Discord Bot')
+            .setEmoji('🤖')
+            .setStyle(ButtonStyle.Primary),
+
+          new ButtonBuilder()
+            .setCustomId('mineflayer_bot')
+            .setLabel('Mineflayer Bot')
+            .setEmoji('⛏️')
+            .setStyle(ButtonStyle.Primary)  
+        )
+      );
     await interaction.reply({
     components: [botShopContainer],
     flags: MessageFlags.IsComponentsV2
     });
   }
+  return;
 });
+
+if (interaction.isButton() && interaction.setCustomId === 'discord_bot') {
+  const modal = new ModalBuilder()
+    .setCustomId('discord_bot_modal')
+    .setTitle('Discord Bot bestellen');
+
+    const wishesInput = new TextInputBuilder()
+      .setCustomId('discord_bot_wishes')
+      .setLabel('Was soll dein Discord Bot können?')
+      .setPlaceholder('Beschreibe hier möglichst genau deine Wünsche...')
+
+      .setStyle(TextInputStyle.Paragraph)
+      .setRequired(true)
+      .setMinLength(100)
+      .setMaxLength(5000);
+
+      modal.addComponents(
+        new ActionRowBuilder().addComponents(wishesInput)
+      );
+
+      await interaction.showModal(modal);
+}
+
+  if (interaction.isButton() && interaction.customId === 'mineflayer_bot') {
+    const modal = new ModalBuilder()
+      .setCustomId('mineflayer_bot_modal')
+      .setTitle('Mineflayer Bot bestellen');
+
+    const wishesInput = new TextInputBuilder()
+      .setCustomId('mineflayer_bot_wishes')
+      .setLabel('Was soll dein Mineflayer Bot können?')
+      .setPlaceholder('Beschreibe hier möglichst genau deine Wünsche...')
+
+      .setStyle(TextInputStyle.Paragraph)
+      .setRequired(true)
+      .setMinLength(100)
+      .setMaxLength(5000);
+
+    modal.addComponents(
+      new ActionRowBuilder().addComponents(wishesInput)
+    );
+
+    await interaction.showModal(modal);
+  }
+
+
+  if (
+    interaction.isModalSubmit() &&
+    interaction.customId === 'discord_bot_modal'
+  ) {
+    const wishes = interaction.fields.getTextInputValue('discord_bot_wishes');
+
+    await interaction.reply({
+      content:
+        '✅ **Deine Discord-Bot-Bestellung wurde erhalten!**\n\n' +
+        `**Deine Wünsche:**\n${wishes}`,
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  // Mineflayer Bot Bestellung abgeschickt
+  if (
+    interaction.isModalSubmit() &&
+    interaction.customId === 'mineflayer_bot_modal'
+  ) {
+    const wishes = interaction.fields.getTextInputValue('mineflayer_bot_modal');
+
+    await interaction.reply({
+      content:
+        '✅ **Deine Mineflayer-Bot-Bestellung wurde erhalten!**\n\n' +
+        `**Deine Wünsche:**\n${wishes}`,
+      flags: MessageFlags.Ephemeral
+    });
+  }
 client.login(process.env.DISCORD_BOT_TOKEN);
