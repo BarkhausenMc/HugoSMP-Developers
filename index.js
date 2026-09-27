@@ -449,8 +449,8 @@ client.on('interactionCreate', async (interaction) => {
       .setMaxLength(4000);
 
     modal.addComponents(
-      new ActionRowBuilder().addComponents(duration),
       new ActionRowBuilder().addComponents(hosting),
+      new ActionRowBuilder().addComponents(duration),
       new ActionRowBuilder().addComponents(standard_bot),
       new ActionRowBuilder().addComponents(wishesInput)
     );
