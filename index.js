@@ -246,7 +246,10 @@ client.on('interactionCreate', async (interaction) => {
             '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
             '### 2. Bestellung konfigurieren\n' +
             '> Beschreibe nun deine Wünsche für deinen Bot.\n' +
-            '> **Tipp:** Je genauer du deine Wünsche beschreibst, desto besser können wir deinen Bot nach deinen Vorstellungen entwickeln.'
+            '> **Tipp:** Je genauer du deine Wünsche beschreibst, desto besser können wir deinen Bot nach deinen Vorstellungen entwickeln.\n' +
+            '### 3. Hosting `Ja` oder `Nein`\n' +
+            '> Wir bieten zudem die Möglichkeit, deinen Bot direkt bei uns zu hosten.\n' +
+            '> Dabei übernehmen wir den kompletten Setup-Prozess für dich.'
           )
         )
 
@@ -272,6 +275,20 @@ client.on('interactionCreate', async (interaction) => {
               .setCustomId('standard_bots')
               .setLabel('Standard Bots')
               .setStyle(ButtonStyle.Secondary)
+          )
+        )
+        .addSeparatorComponents(
+          new SeparatorBuilder()
+            .setDivider(true)
+            .setSpacing(1)
+        )
+
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            '# 💵 Unsere Preise\n' +
+            '> 🖥️ Hosting <--- 10M pro Monat, 100 pro Jahr\n' +
+            '> 🤖 Custom Discord Bot <--- Preis Verhandelbar, mindest Preis pro Bot 5M\n' +
+            '> Preise für die Standard Bots sichbar über den `Standard Bots` Button.'
           )
         )
 
@@ -519,7 +536,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        '### Hosting\n' +
+        '### 🖥️ Hosting\n' +
         `> ${hosting}\n` +
         
         '### 🤖 Standard Bot\n' +
