@@ -261,15 +261,15 @@ client.on('interactionCreate', async (interaction) => {
             '> Du möchtest einen Bot für einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
             '> Wähle einfach die passende Kategorie für deinen **Discord Bot** und schreibe darunter deine individuellen Wünsche.\n' +
             '> Du kannst dir unsere Standard Bots über den `Standard Bots` Button anzeigen lassen.\n' +
-            '> Falls dein Bot Wunsch dabei ist, schreibe einfach mit beim erstellen deines Tickets den angegeben namen dazu. Z.B. `ticket_bot`'
+            '> Falls dein Bot Wunsch dabei ist, schreibe ihn einfach mit beim erstellen deines Tickets den angegeben Namen dazu. Z.B. `ticket_bot`'
           )
         )
 
         .addActionRowComponents(
           new ActionRowBuilder().addComponents(
             new ButtonBuilder()
-              .setCustomId('categories')
-              .setLabel('Kategorien')
+              .setCustomId('standard_bots')
+              .setLabel('Standard Bots')
               .setStyle(ButtonStyle.Secondary)
           )
         )
@@ -350,7 +350,7 @@ client.on('interactionCreate', async (interaction) => {
 
  if (
   interaction.isButton() &&
-  interaction.customId === 'categories'
+  interaction.customId === 'standard_bots'
 ) {
   const categoriesContainer = new ContainerBuilder()
     .addTextDisplayComponents(
@@ -396,6 +396,14 @@ client.on('interactionCreate', async (interaction) => {
       .setCustomId('discord_bot_modal')
       .setTitle('Discord Bot bestellen');
 
+    const standard_bot = new TextInputBuilder()
+      .setCustomId('standard_bots_modal')
+      .setLabel('Wie lautet der Namen des Standard Bots?')
+      .setPlaceholder('z.b. ticket_bot')
+
+      .setStyle(TextInputStyle.Short)
+      .setRequired(false);
+
     const wishesInput = new TextInputBuilder()
       .setCustomId('discord_bot_wishes')
       .setLabel('Was soll dein Discord Bot können?')
@@ -404,7 +412,7 @@ client.on('interactionCreate', async (interaction) => {
       )
       .setStyle(TextInputStyle.Paragraph)
       .setRequired(true)
-      .setMinLength(100)
+      .setMinLength(0)
       .setMaxLength(4000);
 
     modal.addComponents(
