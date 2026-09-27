@@ -224,89 +224,117 @@ client.on('interactionCreate', async (interaction) => {
     const botShopContainer = new ContainerBuilder()
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          '# 🛒 HugoSMP Developers Bot Shop\n> Dein Profi-Shop für individuelle Bots — schnell, zuverlässig, auf dich zugeschnitten.'
+          [
+            '# 🛒 HugoSMP Developers — Bot Shop',
+            '',
+            '### Wähle deinen Bot-Typ',
+            'Entscheide dich zwischen einem **Discord Bot** oder einem **Mineflayer Bot**.',
+            '',
+            '> 💡 Anschließend kannst du dein gewünschtes **Bot-Tier** auswählen.',
+            '> Höhere Tiers bieten mehr Funktionen und Möglichkeiten.'
+          ].join('\n')
         )
       )
+
       .addSeparatorComponents(
         new SeparatorBuilder()
           .setDivider(true)
           .setSpacing(1)
       )
-      .addSectionComponents(
-        new SectionBuilder()
-          .addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(
-              '## 🤖 Discord Bot\n> Custom Discord Bots mit Moderation, Tickets, Economy, Logging u.v.m. — genau für deine Community programmiert.'
-            )
-          )
-          .setButtonAccessory(
-            new ButtonBuilder()
-              .setCustomId('shop_type_discord')
-              .setLabel('Discord Bot')
-              .setEmoji('🤖')
-              .setStyle(ButtonStyle.Primary)
-          )
-      )
-      .addSectionComponents(
-        new SectionBuilder()
-          .addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(
-              '## ⛏️ Mineflayer Bot\n> Minecraft Bots basierend auf Mineflayer — Farmbots, Chat-Bots, Anti-AFK & Automatisierung für deinen Server.'
-            )
-          )
-          .setButtonAccessory(
-            new ButtonBuilder()
-              .setCustomId('shop_type_mineflayer')
-              .setLabel('Mineflayer Bot')
-              .setEmoji('⛏️')
-              .setStyle(ButtonStyle.Success)
-          )
-      )
-      .addSeparatorComponents(
-        new SeparatorBuilder()
-          .setDivider(true)
-          .setSpacing(1)
-      )
+
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          '## 💎 Tier-Auswahl\nWähle anschließend dein Tier — **höhere Tiers = mehr Features & Funktionen**.'
+          [
+            '## 🤖 Bot-Typ',
+            '',
+            'Wähle unten aus, welche Art von Bot du erstellen möchtest.'
+          ].join('\n')
         )
       )
+
+      .addActionRowComponents(
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('shop_bot_discord')
+            .setLabel('Discord Bot')
+            .setEmoji('💬')
+            .setStyle(ButtonStyle.Primary),
+
+          new ButtonBuilder()
+            .setCustomId('shop_bot_mineflayer')
+            .setLabel('Mineflayer Bot')
+            .setEmoji('⛏️')
+            .setStyle(ButtonStyle.Secondary)
+        )
+      )
+
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(true)
+          .setSpacing(1)
+      )
+
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          [
+            '## ⭐ Bot-Tier',
+            '',
+            'Wähle anschließend das gewünschte Tier.',
+            '',
+            '**Tier 1** · Basic',
+            '› Grundlegende Funktionen',
+            '',
+            '**Tier 2** · Advanced',
+            '› Erweiterte Funktionen & mehr Anpassungsmöglichkeiten',
+            '',
+            '**Tier 3** · Premium',
+            '› Vollständiges Feature-Paket & maximale Anpassbarkeit'
+          ].join('\n')
+        )
+      )
+
       .addActionRowComponents(
         new ActionRowBuilder().addComponents(
           new StringSelectMenuBuilder()
-            .setCustomId('shop_tier_select')
-            .setPlaceholder('🎯 Wähle dein Tier...')
+            .setCustomId('shop_bot_tier')
+            .setPlaceholder('⭐ Wähle dein Bot-Tier')
             .addOptions(
               {
                 label: 'Tier 1 — Basic',
-                description: 'Perfekt für Einsteiger: Basis-Features',
+                description: 'Grundlegende Bot-Funktionen',
                 value: 'tier_1',
-                emoji: '⭐'
+                emoji: '🥉'
               },
               {
                 label: 'Tier 2 — Advanced',
-                description: 'Mehr Features, Konfiguration & Extras',
+                description: 'Erweiterte Funktionen & Anpassungen',
                 value: 'tier_2',
-                emoji: '🌟'
+                emoji: '🥈'
               },
               {
                 label: 'Tier 3 — Premium',
-                description: 'Alle Features, volle Customization & Support',
+                description: 'Maximale Funktionen & Anpassbarkeit',
                 value: 'tier_3',
-                emoji: '👑'
+                emoji: '🥇'
               }
             )
         )
       )
+
       .addSeparatorComponents(
         new SeparatorBuilder()
-          .setDivider(true)
-          .setSpacing(1)
+          .setDivider(false)
+          .setSpacing(2)
       )
+
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          '-# ⚡ Sofortige Bearbeitung · 🔒 Sichere Abwicklung · 🛠️ Individuelle Anpassungen möglich'
+          [
+            '### 💎 Dein Bot. Deine Konfiguration.',
+            'Wähle deinen Bot-Typ und anschließend das passende Tier.',
+            '',
+            '-# HugoSMP Developers • Professionelle Bot-Lösungen'
+          ].join('\n')
         )
       );
 
@@ -316,4 +344,4 @@ client.on('interactionCreate', async (interaction) => {
     });
   }
 });
-client.login(process.env.DISCORD_BOT_TOKEN);
+
