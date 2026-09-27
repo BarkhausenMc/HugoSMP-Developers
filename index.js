@@ -256,7 +256,8 @@ client.on('interactionCreate', async (interaction) => {
 
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
-            '## Wähle über die Buttons welche art von Bot du bekommen möchtest.'
+            '## Bot Typ Wählen:\n' +
+            '> *||Wähle nun über die Buttons den passenden Bot Typ.||*'
           )
         )
 
