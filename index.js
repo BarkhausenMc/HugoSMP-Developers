@@ -79,6 +79,23 @@ client.on('guildMemberRemove', async (member) => {
   }, 2000);
 });
 
+client.on('interactionCreate', async (interaction) =>{
+  if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'our-team')  {
+    const ourTeamContainer = new ContainerBuilder()
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          'Our Team'
+        )
+      )
+    await interaction.reply({
+    components: [ourTeamContainer],
+    flags: MessageFlags.IsComponentsV2
+    });
+  }
+});
+
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -197,38 +214,111 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 
-client.on('interactionCreate', async (interaction) =>{
-  if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === 'our-team')  {
-    const ourTeamContainer = new ContainerBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          'Our Team'
-        )
-      )
-    await interaction.reply({
-    components: [ourTeamContainer],
-    flags: MessageFlags.IsComponentsV2
-    });
-  }
-});
 
 
-client.on('interactionCreate', async (interaction) =>{
+
+client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === 'bot-shop') {
-    const botShopContainer = new ContainerBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          'Bot Shop'
-        )
+    
+    // Erstellt den Container
+    const botShopContainer = new ContainerComponent()
+      .addSection(
+        new SectionComponent()
+          .addComponents(
+            new TextDisplayBuilder()
+              .setContent('# 🛒 Bot Shop - Wähle dein Paket')
+              .setStyle(TextDisplayStyle.Normal)
+          )
+          .addComponents(
+            new TextDisplayBuilder()
+              .setContent('Willkommen beim HugoSMP Entwickler-Bot Shop! Hier findest du professionelle Bots für deine Bedürfnisse.')
+              .setStyle(TextDisplayStyle.Normal)
+          )
       )
-    await interaction.reply({
-    components: [botShopContainer],
-    flags: MessageFlags.IsComponentsV2
-    });
+      
+      // Discord Bot Option
+      .addSection(
+        new SectionComponent()
+          .addComponents(
+            new TextDisplayBuilder()
+              .setContent('🤖 **Discord Bot**\nModeration, Musik, Economy und mehr für deine Community.')
+              .setStyle(TextDisplayStyle.Normal)
+          )
+          .addComponents(
+            new ButtonBuilder()
+              .setCustomId('select_discord_bot')
+              .setLabel('Discord Bot wählen')
+              .setEmoji('<:discord:1234567890>')
+              .setStyle(ButtonStyle.Primary)
+          )
+      )
+      
+      // Mineflayer Bot Option  
+      .addSection(
+        new SectionComponent()
+          .addComponents(
+            new TextDisplayBuilder()
+              .setContent('⚔️ **Mineflayer Bot**\nMinecraft Automation, Farmbots und Server-Integration.')
+              .setStyle(TextDisplayStyle.Normal)
+          )
+          .addComponents(
+            new ButtonBuilder()
+              .setCustomId('select_mineflayer_bot')
+              .setLabel('Mineflayer Bot wählen')
+              .setEmoji('<:minecraft:1234567891>')
+              .setStyle(ButtonStyle.Success)
+          )
+      )
+      
+      // Tier Auswahldropdown
+      .addSection(
+        new SectionComponent()
+          .addComponents(
+            new TextDisplayBuilder()
+              .setContent('📊 **Tier Auswahl**\nWähle das Feature-Level deines Bots:')
+              .setStyle(TextDisplayStyle.Normal)
+          )
+          .addComponents(
+            new StringSelectMenuBuilder()
+              .setCustomId('select_tier')
+              .setPlaceholder('Wähle eine Bot-Kategorie')
+              .addOptions([
+                {
+                  label: 'Tier 1 - Basic',
+                  description: 'Grundfunktionen, Moderation, einfache Befehle',
+                  value: 'tier_basic',
+                  emoji: '⭐',
+                  default: true
+                },
+                {
+                  label: 'Tier 2 - Standard',
+                  description: 'Erweiterte Funktionen, Logs, Reaktionen, Wirtschaftssystem',
+                  value: 'tier_standard',
+                  emoji: '🌟'
+                },
+                {
+                  label: 'Tier 3 - Premium',
+                  description: 'Alle Features, Analytics, API-Integrationen, Prioritätssupport',
+                  value: 'tier_premium',
+                  emoji: '💎'
+                }
+              ])
+          )
+      );
+
+    try {
+      await interaction.reply({
+        components: [botShopContainer],
+        ephemeral: true  // Nur der Nutzer sieht die Nachricht
+      });
+    } catch (error) {
+      console.error('Fehler beim Senden des Shops:', error);
+      await interaction.reply({
+        content: '❌ Ein Fehler ist aufgetreten. Bitte versuche es später erneut.',
+        ephemeral: true
+      });
+    }
   }
-});
-client.login(process.env.DISCORD_BOT_TOKEN);
+});t.login(process.env.DISCORD_BOT_TOKEN);
