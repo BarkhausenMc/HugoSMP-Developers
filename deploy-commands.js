@@ -23,6 +23,10 @@ const commands = [
     new SlashCommandBuilder()
       .setName('ticket-support-bot')
       .setDescription('Schickt das Embed mit dem man den Standard Ticket-Support Bot kaufen kann.'),
+
+    new SlashCommandBuilder()
+      .setName('giveaway-bot')
+      .setDescription('Schickt das Embed mit dem man den Standard Giveaway Bot kaufen kann.'),  
 ];
 
 const rest = new REST({ version: '10' })
