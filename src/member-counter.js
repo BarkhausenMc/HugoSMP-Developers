@@ -1,3 +1,5 @@
+const { ChannelType } = require('discord.js');
+
 async function updateMemberCount(guild) {
   try {
     if (!guild) return;
