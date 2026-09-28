@@ -601,6 +601,12 @@ client.on('interactionCreate', async (interaction) => {
     }
   }
 
+  await thread.send({
+    components: [ticketSupportBotConatiner],
+    flags: MessageFlags.IsComponentsV2
+  });
+
+
 // =========================
 // Kaufen Button
 // =========================
@@ -650,12 +656,6 @@ client.on('interactionCreate', async (interaction) => {
 
     return;
   }
-
-  await thread.send({
-    components: [ticketSupportBotConatiner],
-    flags: MessageFlags.IsComponentsV2
-  });
-
 // =========================
 // Discord Bot Modal
 // =========================
