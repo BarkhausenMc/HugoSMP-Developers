@@ -573,7 +573,7 @@ client.on('interactionCreate', async (interaction) => {
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
           '### 💵 Preise: `15M`\n' +
-          '> ||Die Zahlung erfolgt einmalig.||\n\n' +
+          '> ||Die Zahlung erfolgt einmalig.||\n' +
           '### 🖥️ Hosting\n' +
           '> Du kannst deinen Bot auch direkt bei uns Hosten lassen.\n' +
           '> Die Preise dafür findest du im **#🛒・bot-shop** Channel.'
@@ -591,6 +591,12 @@ client.on('interactionCreate', async (interaction) => {
           '### Um den Bot zu kaufen, klicke den `🛒 Kaufen` Button.\n' +
           '> ||Du hast noch extra Wünsche? Kein Problem, schreib sie uns einfach dazu.||'
         )
+      )
+
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(true)
+          .setSpacing(1)
       )
 
       .addActionRowComponents(
@@ -643,7 +649,7 @@ client.on('interactionCreate', async (interaction) => {
 
     const wishesInput = new TextInputBuilder()
       .setCustomId('discord_bot_wishes')
-      .setLabel('Was soll dein Discord Bot können?')
+      .setLabel('Was soll der Discord Bot noch extra können?')
       .setPlaceholder(
         'Beschreibe hier möglichst genau deine Wünsche...'
       )
