@@ -537,9 +537,8 @@ if (
 // =========================
 
 client.on('interactionCreate', async (interaction) => {
-  try {
   if (interaction.isChatInputCommand()) {
-  if (interaction.commandName === 'ticket/support-bot') {
+  if (interaction.commandName === 'ticket-support-bot') {
 
     const ticketSupportBotContainer = new ContainerBuilder()
       .addTextDisplayComponents(
@@ -783,17 +782,6 @@ if (
 
   return;
 }
-
- } catch (error) {
-    console.error('INTERACTION ERROR:', error);
-
-    if (!interaction.replied && !interaction.deferred) {
-      await interaction.reply({
-        content: '❌ Beim Ausführen ist ein Fehler aufgetreten.',
-        flags: MessageFlags.Ephemeral
-      }).catch(() => {});
-    }
-  }
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
