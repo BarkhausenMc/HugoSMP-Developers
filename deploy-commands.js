@@ -21,8 +21,8 @@ const commands = [
       .setDescription('Schickt das Embed für den Bot Shop in den Channel.'),
 
     new SlashCommandBuilder()
-      .setName('ticketSupport-bot')  
-      .setDescription('Schickt das Embed mit dem man den Standard Ticket/Support Bot kaufen kann.'),
+      .setName('Ticket-Support-Bot')  
+      .setDescription('Schickt das Embed mit dem man den Standard Ticket-Support Bot kaufen kann.'),
 ];
 
 const rest = new REST({ version: '10' })
