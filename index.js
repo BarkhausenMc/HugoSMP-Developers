@@ -783,7 +783,7 @@ if (
 
   return;
 }
-de
+
  } catch (error) {
     console.error('INTERACTION ERROR:', error);
 
