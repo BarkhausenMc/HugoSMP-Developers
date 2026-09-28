@@ -537,6 +537,7 @@ if (
 // =========================
 
 client.on('interactionCreate', async (interaction) => {
+  try {
   if (interaction.isChatInputCommand()) {
   if (interaction.commandName === 'ticket/support-bot') {
 
@@ -672,7 +673,8 @@ if (
 ) {
 
   const duration =
-    interaction.fields.getTextInputValue('hosting_duration');
+    interaction.fields.getTextInputValue('hosting_duration') || 'Kein Hosting Duration angegeben.';
+
 
   const hosting =
     interaction.fields.getTextInputValue('hosting_yes_or_no');
@@ -781,6 +783,17 @@ if (
 
   return;
 }
+de
+ } catch (error) {
+    console.error('INTERACTION ERROR:', error);
+
+    if (!interaction.replied && !interaction.deferred) {
+      await interaction.reply({
+        content: '❌ Beim Ausführen ist ein Fehler aufgetreten.',
+        flags: MessageFlags.Ephemeral
+      }).catch(() => {});
+    }
+  }
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
