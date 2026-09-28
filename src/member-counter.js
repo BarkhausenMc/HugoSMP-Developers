@@ -24,3 +24,5 @@ async function updateMemberCount(guild) {
     console.error('Fehler beim Aktualisieren des Member Counters:', error);
   }
 }
+
+module.exports = { updateMemberCount };
