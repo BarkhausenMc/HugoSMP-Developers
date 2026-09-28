@@ -25,6 +25,10 @@ const client = new Client({
   ]
 });
 
+  // =========================
+  // Guild Member Counter
+  // =========================
+
 async function updateMemberCount(guild) {
   try {
     if (!guild) return;
@@ -87,6 +91,11 @@ client.on('guildMemberRemove', async (member) => {
   }, 2000);
 });
 
+
+  // =========================
+  // /our-team
+   // =========================
+
 client.on('interactionCreate', async (interaction) =>{
   if (!interaction.isChatInputCommand()) return;
 
@@ -103,6 +112,10 @@ client.on('interactionCreate', async (interaction) =>{
     });
   }
 });
+
+  // =========================
+  // /rules
+   // =========================
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
@@ -226,15 +239,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
 client.on('interactionCreate', async (interaction) => {
-  // =========================
-  // Slash Commands
-  // =========================
-
   if (interaction.isChatInputCommand()) {
-
-    // =========================
-    // /bot-shop
-    // =========================
 
     if (interaction.commandName === 'bot-shop') {
       const botShopContainer = new ContainerBuilder()
@@ -243,7 +248,7 @@ client.on('interactionCreate', async (interaction) => {
             '# 🛒 HugoSMP Developers — Bot Shop\n' +
             '## 📖 So funktioniert der Bot Shop\n' +
             '### 1. Bot-Typ auswählen\n' +
-            '> Wähle zuerst aus, ob du einen **Discord Bot** oder einen **Mineflayer Bot** möchtest.\n' +
+            '> Du kannst hier auf dem Server Discord Bots kaufen, aber auf [hugosmp AFK](https://deine-webseite.de) kannst du dir AFK/Mineflayer Bots kaufen.\n' +
             '### 2. Bestellung konfigurieren\n' +
             '> Beschreibe nun deine Wünsche für deinen Bot.\n' +
             '> **Tipp:** Je genauer du deine Wünsche beschreibst, desto besser können wir deinen Bot nach deinen Vorstellungen entwickeln.\n' +
@@ -262,21 +267,13 @@ client.on('interactionCreate', async (interaction) => {
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## 🤖 Standard Bots\n' +
-            '> Du möchtest einen Bot für einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
-            '> Wähle einfach die passende Kategorie für deinen **Discord Bot** und schreibe darunter deine individuellen Wünsche.\n' +
-            '> Du kannst dir unsere Standard Bots über den `Standard Bots` Button anzeigen lassen.\n' +
-            '> Falls dein Bot Wunsch dabei ist, schreibe ihn einfach mit beim erstellen deines Tickets den angegeben Namen dazu. Z.B. `ticket_bot`'
+            '> Du findest unsere Standard Bots im #🤖・standard-bots Channel\n' +
+            '> Du möchtest einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
+            '> Wähle einfach den passenden Bot im #🤖・standard-bots Forum und Klicke den Bot kaufen Button.\n' +
+            '> Dein Bot Wunsch ist nihct bei den Standard Bots dabei? Dann Klicke den `🤖 Discord Button` unten.' 
           )
         )
 
-        .addActionRowComponents(
-          new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-              .setCustomId('standard_bots')
-              .setLabel('Standard Bots')
-              .setStyle(ButtonStyle.Secondary)
-          )
-        )
         .addSeparatorComponents(
           new SeparatorBuilder()
             .setDivider(true)
@@ -286,9 +283,11 @@ client.on('interactionCreate', async (interaction) => {
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## 💵 Unsere Preise\n' +
-            '> 🖥️ Hosting <--- 10M pro Monat, 100M pro Jahr\n' +
-            '> 🤖 Custom Discord Bot <--- Preis Verhandelbar, mindest Preis pro Bot 5M\n' +
-            '> Preise für die Standard Bots sichbar über den `Standard Bots` Button'
+            '> 🖥️ Hosting (Wir übernehmen den kompletten Setup-Prozess)\n' +
+            '> ➡️ 1 Monat = 10M\n' +
+            '> ➡️ 1 Jahr = 100M\n' +
+            '> 🤖 Custom Discord Bot\n' +
+            '> ➡️ mind. Preis = 5M (Preis Verhandelbar)' 
           )
         )
 
@@ -366,45 +365,6 @@ client.on('interactionCreate', async (interaction) => {
   // Discord Bot Button
   // =========================
 
- if (
-  interaction.isButton() &&
-  interaction.customId === 'standard_bots'
-) {
-  const categoriesContainer = new ContainerBuilder()
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        '## 💬 Discord Bots\n' +
-
-        '🎫 **Ticket / Support Bot** — `ticket_bot`, Preis: 15M\n' +
-        '> Ticketsysteme, Support-Anfragen, Bewerbungen, Partnerschaften und individuelle Ticket-Funktionen.\n\n' +
-
-        '🎁 **Giveaway Bot** — `giveaway_bot`, Preis: 5M\n' +
-        '> Giveaways erstellen, Teilnahmebedingungen, automatische Gewinnerauslosung und Belohnungen.\n\n' +
-
-        '👋 **Welcome Bot** — `welcome_bot`, Preis: 7.5M\n' +
-        '> Willkommens- und Abschiedsnachrichten, automatische Rollen und individuelle Begrüßungssysteme.\n\n' +
-
-        '🤖 **Custom Discord Bot** — `custom_discord_bot`, Preis: mind. 5M\n' +
-        '> Eine komplett eigene Idee für einen Discord Bot? Beschreibe einfach genau, was dein Bot können soll.\n\n' +
-
-        '💡 **Beispiel für eine Bestellung:**\n' +
-        '> `ticket_bot`\n' +
-        '> Ich möchte einen Ticket-Bot mit den Kategorien Support, Bewerbung und Partnerschaften. Jedes Ticket soll automatisch einem zuständigen Teammitglied zugewiesen werden.'
-      )
-    );
-
-  await interaction.reply({
-    components: [categoriesContainer],
-    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-  });
-}
-
-
-
-  // =========================
-  // Discord Bot Button
-  // =========================
-
   if (
     interaction.isButton() &&
     interaction.customId === 'discord_bot'
@@ -429,14 +389,6 @@ client.on('interactionCreate', async (interaction) => {
       .setStyle(TextInputStyle.Short)
       .setRequired(false);
 
-    const standard_bot = new TextInputBuilder()
-      .setCustomId('standard_bots_modal')
-      .setLabel('Wie lautet der Namen des Standard Bots?')
-      .setPlaceholder('z.b. ticket_bot')
-
-      .setStyle(TextInputStyle.Short)
-      .setRequired(false);
-
     const wishesInput = new TextInputBuilder()
       .setCustomId('discord_bot_wishes')
       .setLabel('Was soll dein Discord Bot können?')
@@ -451,7 +403,6 @@ client.on('interactionCreate', async (interaction) => {
     modal.addComponents(
       new ActionRowBuilder().addComponents(hosting),
       new ActionRowBuilder().addComponents(duration),
-      new ActionRowBuilder().addComponents(standard_bot),
       new ActionRowBuilder().addComponents(wishesInput)
     );
 
@@ -475,9 +426,6 @@ if (
   const hosting =
     interaction.fields.getTextInputValue('hosting_yes_or_no');
   
-  const standard_bot =
-    interaction.fields.getTextInputValue('standard_bots_modal') || 'Kein Standard Bot angegeben.';
-
   const wishes =
     interaction.fields.getTextInputValue('discord_bot_wishes') || 'Keine weiteren Wünsche angegeben.';
 
@@ -551,9 +499,6 @@ if (
         '### 🖥️ Hosting\n' +
         `> ${hosting}\n` +
         `> ${duration}\n` +
-        
-        '### 🤖 Standard Bot\n' +
-        `> ${standard_bot}\n` +
 
         '### 📝 Wünsche\n' +
         `> ${wishes}`
