@@ -24,3 +24,5 @@ const client = new Client({
     GatewayIntentBits.GuildMembers
   ]
 });
+
+module.exports = { client };
