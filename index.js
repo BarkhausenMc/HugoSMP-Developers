@@ -598,14 +598,13 @@ client.on('interactionCreate', async (interaction) => {
         .setStyle(ButtonStyle.Success)
       )
     )
-    }
-  }
-
-  await thread.send({
+    await thread.send({
     components: [ticketSupportBotConatiner],
     flags: MessageFlags.IsComponentsV2
   });
-
+  
+    }
+  }
 
 // =========================
 // Kaufen Button
