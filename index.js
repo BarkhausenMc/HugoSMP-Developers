@@ -267,9 +267,9 @@ client.on('interactionCreate', async (interaction) => {
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## 🤖 Standard Bots\n' +
-            '> Du findest unsere Standard Bots im #🤖・standard-bots Channel\n' +
+            '> Du findest unsere Standard Bots im **#🤖・standard-bots** Channel\n' +
             '> Du möchtest einen Standard Bot, benötigst aber zusätzliche individuelle Features? Kein Problem!\n' +
-            '> Wähle einfach den passenden Bot im #🤖・standard-bots Forum und Klicke den Bot kaufen Button.\n' +
+            '> Wähle einfach den passenden Bot im **#🤖・standard-bots** Forum und Klicke den Bot kaufen Button.\n' +
             '> Dein Bot Wunsch ist nihct bei den Standard Bots dabei? Dann Klicke den `🤖 Discord Button` unten.' 
           )
         )
@@ -283,10 +283,10 @@ client.on('interactionCreate', async (interaction) => {
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(
             '## 💵 Unsere Preise\n' +
-            '> 🖥️ Hosting (Wir übernehmen den kompletten Setup-Prozess)\n' +
+            '> 🖥️ **Hosting** (Wir übernehmen den kompletten Setup-Prozess)\n' +
             '> ➡️ 1 Monat = 10M\n' +
             '> ➡️ 1 Jahr = 100M\n' +
-            '> 🤖 Custom Discord Bot\n' +
+            '> 🤖 **Custom Discord Bot**\n' +
             '> ➡️ mind. Preis = 5M (Preis Verhandelbar)' 
           )
         )
@@ -471,7 +471,7 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        '# ✅ Discord Bot Bestellung'
+        '# ✅ Custom Discord Bot Bestellung'
       )
     )
 
@@ -521,10 +521,250 @@ if (
     flags: MessageFlags.IsComponentsV2
   });
 
+  await interaction.reply({
+    content:
+      `✅ **Deine Bestellung wurde erfolgreich erstellt!**\n\n` +
+      `🎫 Dein Ticket: <#${thread.id}>`,
+    flags: MessageFlags.Ephemeral
+  });
 
-  // =========================
-  // Kunde bekommt Bestätigung
-  // =========================
+  return;
+}
+});
+
+// =========================
+// /ticket/support-bot
+// =========================
+
+client.on('interactionCreate', async (interaction) => {
+  if (interaction.isChatInputCommand()) {
+    if (interaction.commandName === 'ticket/support-bot') {
+      const ticketSupportBotConatiner = new ContainerBuilder()
+        new TextDisplayBuilder().setContent(
+            '# 🎫 Ticket/Support Bot'
+        )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '## Was kann der Bot?\n' +
+        '- Ticket System über Threads\n' +
+        '- fügt automatisch ersteller sowie Ticket Rolle hinzu\n' +
+        '- bewertungs System\n' +
+        '- bis zu 5 verschiedene Kategorien\n' +
+        '- für jede Kategorie ein Modal(Fragen)' 
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '### 💵  Preise: `15M`\n' +
+        '> ||Die Zahlung erfolgt einmalig.||\n\n' +
+        '### 🖥️ Hosting\n' +
+        '> Du kannst deinen Bot auch direkt bei uns Hosten lassen.\n> Die Preise dafür findest du im **#🛒・bot-shop** Channel.'
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '### Um den Bot zu Kaufen Klicke den `🛒 Kaufen` Button.\n' +
+        '> ||Du hast noch extra Wünsche? Kein Problem schreib sie uns einfach dazu.||'
+      )
+    )
+
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+        .setCustomId('buy_ticketSupportBot')
+        .setLabel('Kaufen')
+        .setEmoji('🛒')
+        .setStyle(ButtonStyle.Success)
+      )
+    )
+    }
+  }
+
+// =========================
+// Kaufen Button
+// =========================
+
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'buy_ticketSupportBot'
+  ) {
+    const modal = new ModalBuilder()
+      .setCustomId('ticketSupportBot_kaufen_modal')
+      .setTitle('Standard Discord Bot bestellen');
+
+    const hosting = new TextInputBuilder()
+      .setCustomId('hosting_yes_or_no')
+      .setLabel('Möchtest du deinen Bot direkt bei uns Hosten?')
+      .setPlaceholder('Ja oder Nein')
+
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
+
+    const duration = new TextInputBuilder()
+      .setCustomId('hosting_duration')
+      .setLabel('Wie lange möchtest du dein Bot Hosten lassen?')
+      .setPlaceholder('z.B. 3 Monate, 1 Jahr')
+
+      .setStyle(TextInputStyle.Short)
+      .setRequired(false);
+
+    const wishesInput = new TextInputBuilder()
+      .setCustomId('discord_bot_wishes')
+      .setLabel('Was soll dein Discord Bot können?')
+      .setPlaceholder(
+        'Beschreibe hier möglichst genau deine Wünsche...'
+      )
+      .setStyle(TextInputStyle.Paragraph)
+      .setRequired(true)
+      .setMinLength(0)
+      .setMaxLength(4000);
+
+    modal.addComponents(
+      new ActionRowBuilder().addComponents(hosting),
+      new ActionRowBuilder().addComponents(duration),
+      new ActionRowBuilder().addComponents(wishesInput)
+    );
+
+    await interaction.showModal(modal);
+
+    return;
+  }
+
+  await thread.send({
+    components: [ticketSupportBotConatiner],
+    flags: MessageFlags.IsComponentsV2
+  });
+
+// =========================
+// Discord Bot Modal
+// =========================
+
+if (
+  interaction.isModalSubmit() &&
+  interaction.customId === 'ticketSupportBot_kaufen_modal'
+) {
+
+  const duration =
+    interaction.fields.getTextInputValue('hosting_duration');
+
+  const hosting =
+    interaction.fields.getTextInputValue('hosting_yes_or_no');
+  
+  const wishes =
+    interaction.fields.getTextInputValue('discord_bot_wishes') || 'Keine weiteren Wünsche angegeben.';
+
+  const ticketChannel =
+    interaction.guild.channels.cache.get(
+      process.env.DISCORD_BOT_CHANNEL_ID
+    );
+
+  if (!ticketChannel) {
+    return interaction.reply({
+      content: '❌ Der Ticket-Channel wurde nicht gefunden.',
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  const thread = await ticketChannel.threads.create({
+    name: `🤖 Discord Bot・${interaction.user.username}`,
+    autoArchiveDuration: 10080,
+    type: ChannelType.PrivateThread,
+    reason: `Discord Bot Bestellung von ${interaction.user.tag}`
+  });
+
+  await thread.members.add(interaction.user.id);
+
+  const supportRole = interaction.guild.roles.cache.get(
+    process.env.DISCORD_BOT_ROLE_ID
+  );
+
+  if (supportRole) {
+    for (const member of supportRole.members.values()) {
+      try {
+        await thread.members.add(member.id);
+      } catch (error) {
+        console.error(
+          `Fehler beim Hinzufügen von ${member.user.tag}:`,
+          error
+        );
+      }
+    }
+  }
+
+  const ticketContainer = new ContainerBuilder()
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '# ✅ Standard Discord Bot Bestellung'
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `**👤 Kunde:** \`${interaction.user.username}\`\n` +
+        `**🆔 User-ID:** \`${interaction.user.id}\``
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '### 🖥️ Hosting\n' +
+        `> ${hosting}\n` +
+        `> ${duration}\n` +
+
+        '### 📝 Wünsche\n' +
+        `> ${wishes}`
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert!||`
+      )
+    )
+  await thread.send({
+    components: [ticketContainer],
+    flags: MessageFlags.IsComponentsV2
+  });
 
   await interaction.reply({
     content:
@@ -535,7 +775,6 @@ if (
 
   return;
 }
-
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
