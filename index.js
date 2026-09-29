@@ -286,55 +286,68 @@ if (
 }
 });
 
-if (
-  interaction.isButton() &&
-  interaction.customId === 'request_ticket_close'
-) {
-  const requestTicketCloseContainer = new ContainerBuilder()
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        'Willst du das ticket wirklich schließen?\n' +
-        'Wenn ja dann drücke den `Bestätigen` Button'
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'request_ticket_close'
+  ) {
+    const requestTicketCloseContainer = new ContainerBuilder()
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          'Willst du das ticket wirklich schließen?\n' +
+          'Wenn ja dann drücke den `Bestätigen` Button'
+        )
       )
-    )
 
-    .addActionRowComponents(
-      new ActionRowBuilder().addComponents(
+      .addActionRowComponents(
+        new ActionRowBuilder().addComponents(
 
-        new ButtonBuilder()
-        .setCustomId('confirmed_ticket_close')
-        .setLabel('Bestätigen')
-        .setEmoji('✅')
-        .setStyle(ButtonStyle.Success)
+          new ButtonBuilder()
+            .setCustomId('confirmed_ticket_close')
+            .setLabel('Bestätigen')
+            .setEmoji('✅')
+            .setStyle(ButtonStyle.Success)
+        )
       )
-    )
-    
-  await thread.send({
-    components: [requestTicketCloseContainer],
-    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-  });
-}
 
-if (
-  interaction.isButton() &&
-  interaction.customId === 'confirmed_ticket_close'
-) {
-  const confirmedTicketCloseContainer = new ContainerBuilder()
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        'Das Ticket wird in 5 sek gelöscht'
-      )
-    )
+    await interaction.update({
+      components: [requestTicketCloseContainer],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+    });
 
-  await thread.send({
-    components: [confirmedTicketCloseContainer],
-    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-  });
+    const collector = interaction.channel.createMessageComponentCollector({
+      time: 60000,
+      filter: i => i.customId === 'confirmed_ticket_close' && i.user.id === interaction.user.id
+    });
 
-  await new Promise(resolve => setTimeout(resolve, 5000));
-  await interaction.channel.delete();
+    collector.on('collect', async (buttonInteraction) => {
+      const confirmedTicketCloseContainer = new ContainerBuilder()
+        .addTextDisplayComponents(
+          new TextDisplayBuilder().setContent(
+            'Das Ticket wird in 5 sek gelöscht'
+          )
+        )
 
-}
+      await buttonInteraction.update({
+        components: [confirmedTicketCloseContainer],
+        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      await interaction.channel.delete();
+      collector.stop();
+    });
+
+    collector.on('end', (collected, reason) => {
+      if (reason === 'time') {
+        interaction.editReply({
+          content: '❌ Zeitüberschreitung. Schließung abgebrochen.',
+          components: []
+        }).catch(console.error);
+      }
+    });
+
+    return;
+  }
 // =========================
 // /ticket/support-bot
 // =========================
