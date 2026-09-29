@@ -252,6 +252,24 @@ if (
         `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert!||`
       )
     )
+
+    .addSectionComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+
+        new ButtonBuilder()
+        .setCustomId('request_ticket_close')
+        .setLabel('Ticket Schließen')
+        .setEmoji('🔒')
+        .setStyle(ButtonStyle.Secondary)
+      )
+    )
+
   await thread.send({
     components: [ticketContainer],
     flags: MessageFlags.IsComponentsV2
@@ -268,6 +286,55 @@ if (
 }
 });
 
+if (
+  interaction.isButton() &&
+  interaction.customId === 'request_ticket_close'
+) {
+  const requestTicketCloseContainer = new ContainerBuilder()
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        'Willst du das ticket wirklich schließen?\n' +
+        'Wenn ja dann drücke den `Bestätigen` Button'
+      )
+    )
+
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+
+        new ButtonBuilder()
+        .setCustomId('confirmed_ticket_close')
+        .setLabel('Bestätigen')
+        .setEmoji('✅')
+        .setStyle(ButtonStyle.Success)
+      )
+    )
+    
+  await thread.send({
+    components: [requestTicketCloseContainer],
+    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+  });
+}
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'confirmed_ticket_close'
+) {
+  const confirmedTicketCloseContainer = new ContainerBuilder()
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        'Das Ticket wird in 5 sek gelöscht'
+      )
+    )
+
+  await thread.send({
+    components: [confirmedTicketCloseContainer],
+    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+  });
+
+  await new Promise(resolve => setTimeout(resolve, 5000));
+  await interaction.channel.delete();
+
+}
 // =========================
 // /ticket/support-bot
 // =========================
