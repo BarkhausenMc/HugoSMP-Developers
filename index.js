@@ -308,7 +308,7 @@ if (
         )
       )
 
-    await interaction.update({
+    await interaction.reply({
       components: [requestTicketCloseContainer],
       flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
     });
