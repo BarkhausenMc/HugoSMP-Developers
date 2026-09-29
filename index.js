@@ -253,7 +253,7 @@ if (
       )
     )
 
-    .addSectionComponents(
+    .addSeparatorComponents(
       new SeparatorBuilder()
         .setDivider(true)
         .setSpacing(1)
