@@ -155,7 +155,6 @@ if (
   interaction.isModalSubmit() &&
   interaction.customId === 'discord_bot_modal'
 ) {
-
   const duration =
     interaction.fields.getTextInputValue('hosting_duration');
 
@@ -204,7 +203,6 @@ if (
   }
 
   const ticketContainer = new ContainerBuilder()
-
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
         '# ✅ Custom Discord Bot Bestellung'
@@ -249,29 +247,12 @@ if (
 
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert!||`
+        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>\`${interaction.user.username}\` hat einen neuen Discord Bot angefordert!||`
       )
-    )
-
-    .addSectionComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addActionRowComponents(
-      new ActionRowBuilder().addComponents(
-
-        new ButtonBuilder()
-        .setCustomId('request_ticket_close')
-        .setLabel('Ticket Schließen')
-        .setEmoji('🔒')
-        .setStyle(ButtonStyle.Secondary)
-      )
-    )
+    );
 
   await thread.send({
-    components: [ticketContainer],
+    content: ticketContainer.toJSON(),
     flags: MessageFlags.IsComponentsV2
   });
 
@@ -347,7 +328,7 @@ if (
 
     return;
   }
-  
+
 });
 
   
