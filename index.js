@@ -284,7 +284,6 @@ if (
 
   return;
 }
-});
 
   if (
     interaction.isButton() &&
@@ -348,6 +347,10 @@ if (
 
     return;
   }
+  
+});
+
+  
 // =========================
 // /ticket/support-bot
 // =========================
