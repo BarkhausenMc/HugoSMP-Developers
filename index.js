@@ -155,8 +155,9 @@ if (
   interaction.isModalSubmit() &&
   interaction.customId === 'discord_bot_modal'
 ) {
+
   const duration =
-    interaction.fields.getTextInputValue('hosting_duration') || 'Keine Dauer angegeben.';
+    interaction.fields.getTextInputValue('hosting_duration');
 
   const hosting =
     interaction.fields.getTextInputValue('hosting_yes_or_no');
@@ -202,21 +203,76 @@ if (
     }
   }
 
+  const ticketContainer = new ContainerBuilder()
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '# ✅ Custom Discord Bot Bestellung'
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `**👤 Kunde:** \`${interaction.user.username}\`\n` +
+        `**🆔 User-ID:** \`${interaction.user.id}\``
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '### 🖥️ Hosting\n' +
+        `> ${hosting}\n` +
+        `> ${duration}\n` +
+
+        '### 📝 Wünsche\n' +
+        `> ${wishes}`
+      )
+    )
+
+    .addSeparatorComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert!||`
+      )
+    )
+
+    .addSectionComponents(
+      new SeparatorBuilder()
+        .setDivider(true)
+        .setSpacing(1)
+    )
+
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+
+        new ButtonBuilder()
+        .setCustomId('request_ticket_close')
+        .setLabel('Ticket Schließen')
+        .setEmoji('🔒')
+        .setStyle(ButtonStyle.Secondary)
+      )
+    )
+
   await thread.send({
-    content: `# ✅ Custom Discord Bot Bestellung
-
-**👤 Kunde:** \`${interaction.user.username}\`
-**🆔 User-ID:** \`${interaction.user.id}\`
-
-### 🖥️ Hosting
-> ${hosting}
-> ${duration}
-
-### 📝 Wünsche
-> ${wishes}
-
-> ||<@&${process.env.DISCORD_BOT_ROLE_ID}> \`${interaction.user.username}\` hat einen neuen Discord Bot angefordert!||`,
-    flags: MessageFlags.Ephemeral
+    components: [ticketContainer],
+    flags: MessageFlags.IsComponentsV2
   });
 
   await interaction.reply({
@@ -291,7 +347,7 @@ if (
 
     return;
   }
-
+  
 });
 
   
