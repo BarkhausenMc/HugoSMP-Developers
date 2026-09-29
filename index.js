@@ -11,7 +11,8 @@ const {
   TextInputStyle,
   ButtonStyle,
   MessageFlags,
-  ChannelType
+  ChannelType,
+  PermissionFlagsBits
 } = require('discord.js');
 
 const { client } = require('./src/client-setup');
@@ -285,68 +286,241 @@ if (
   return;
 }
 
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'request_ticket_close'
-  ) {
-    const requestTicketCloseContainer = new ContainerBuilder()
+  // =========================
+// Ticket schließen - Bestätigung
+// =========================
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'request_ticket_close'
+) {
+  const requestTicketCloseContainer = new ContainerBuilder()
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        '# 🔒 Ticket schließen\n\n' +
+        'Willst du das Ticket wirklich schließen?\n\n' +
+        'Wenn du fortfährst, kannst du danach nicht mehr in diesem Ticket schreiben.'
+      )
+    )
+
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('confirmed_ticket_close')
+          .setLabel('Bestätigen')
+          .setEmoji('✅')
+          .setStyle(ButtonStyle.Success)
+      )
+    );
+
+  await interaction.reply({
+    components: [requestTicketCloseContainer],
+    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+  });
+
+  return;
+}
+
+
+// =========================
+// Ticket schließen - bestätigt
+// =========================
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'confirmed_ticket_close'
+) {
+  const thread = interaction.channel;
+
+  if (!thread.isThread()) {
+    return interaction.reply({
+      content: '❌ Dieser Button kann nur in einem Ticket verwendet werden.',
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  try {
+
+    // =====================================
+    // Ticket-Ersteller herausfinden
+    // =====================================
+
+    const ticketOwnerId = thread.ownerId;
+
+    if (!ticketOwnerId) {
+      return interaction.reply({
+        content: '❌ Der Ersteller des Tickets konnte nicht gefunden werden.',
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    // =====================================
+    // Prüfen, ob der Klicker der Ersteller ist
+    // =====================================
+
+    if (interaction.user.id !== ticketOwnerId) {
+      return interaction.reply({
+        content:
+          '❌ Nur der Ersteller dieses Tickets kann es schließen.',
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    // =====================================
+    // Ersteller darf nicht mehr schreiben
+    // =====================================
+
+    await thread.permissionOverwrites.edit(
+      ticketOwnerId,
+      {
+        SendMessagesInThreads: false
+      },
+      {
+        reason: 'Ticket-Ersteller hat das Ticket geschlossen'
+      }
+    );
+
+    // =====================================
+    // Ephemeral Bestätigung
+    // =====================================
+
+    const confirmedTicketCloseContainer = new ContainerBuilder()
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          'Willst du das ticket wirklich schließen?\n' +
-          'Wenn ja dann drücke den `Bestätigen` Button'
+          '# 🔒 Ticket geschlossen\n\n' +
+          'Du hast das Ticket erfolgreich geschlossen.\n\n' +
+          'Du kannst in diesem Ticket nun nicht mehr schreiben.\n' +
+          'Das Support-Team kann das Ticket weiterhin bearbeiten.'
         )
+      );
+
+    await interaction.reply({
+      components: [confirmedTicketCloseContainer],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+    });
+
+    // =====================================
+    // Öffentlicher Container für Support
+    // =====================================
+
+    const supportCloseContainer = new ContainerBuilder()
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(
+          '# 🛑 Ticket wartet auf endgültige Schließung\n\n' +
+          'Der Ticket-Ersteller hat das Ticket geschlossen.\n\n' +
+          'Das Ticket kann nun von einem autorisierten Support-Mitglied endgültig gelöscht werden.'
+        )
+      )
+
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(true)
+          .setSpacing(1)
       )
 
       .addActionRowComponents(
         new ActionRowBuilder().addComponents(
-
           new ButtonBuilder()
-            .setCustomId('confirmed_ticket_close')
-            .setLabel('Bestätigen')
-            .setEmoji('✅')
-            .setStyle(ButtonStyle.Success)
+            .setCustomId('final_ticket_close')
+            .setLabel('Ticket endgültig schließen')
+            .setEmoji('🗑️')
+            .setStyle(ButtonStyle.Danger)
         )
-      )
+      );
 
-    await interaction.reply({
-      components: [requestTicketCloseContainer],
-      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+    await thread.send({
+      components: [supportCloseContainer],
+      flags: MessageFlags.IsComponentsV2
     });
 
-    const collector = interaction.channel.createMessageComponentCollector({
-      time: 60000,
-      filter: i => i.customId === 'confirmed_ticket_close' && i.user.id === interaction.user.id
-    });
+  } catch (error) {
+    console.error(
+      'Fehler beim Schließen des Tickets:',
+      error
+    );
 
-    collector.on('collect', async (buttonInteraction) => {
-      const confirmedTicketCloseContainer = new ContainerBuilder()
-        .addTextDisplayComponents(
-          new TextDisplayBuilder().setContent(
-            'Das Ticket wird in 5 sek gelöscht'
-          )
-        )
-
-      await buttonInteraction.update({
-        components: [confirmedTicketCloseContainer],
-        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+    if (!interaction.replied) {
+      await interaction.reply({
+        content:
+          '❌ Beim Schließen des Tickets ist ein Fehler aufgetreten.',
+        flags: MessageFlags.Ephemeral
       });
-
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      await interaction.channel.delete();
-      collector.stop();
-    });
-
-    collector.on('end', (collected, reason) => {
-      if (reason === 'time') {
-        interaction.editReply({
-          content: '❌ Zeitüberschreitung. Schließung abgebrochen.',
-          components: []
-        }).catch(console.error);
-      }
-    });
-
-    return;
+    }
   }
+
+  return;
+}
+
+
+// =========================
+// Ticket endgültig schließen
+// =========================
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'final_ticket_close'
+) {
+  const thread = interaction.channel;
+
+  if (!thread.isThread()) {
+    return interaction.reply({
+      content:
+        '❌ Dieser Button kann nur in einem Ticket verwendet werden.',
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  // =====================================
+  // Support-Rolle prüfen
+  // =====================================
+
+  const supportRoleId = process.env.DISCORD_BOT_ROLE_ID;
+
+  if (!supportRoleId) {
+    return interaction.reply({
+      content:
+        '❌ DISCORD_BOT_ROLE_ID ist nicht konfiguriert.',
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  const hasSupportRole =
+    interaction.member.roles.cache.has(supportRoleId);
+
+  if (!hasSupportRole) {
+    return interaction.reply({
+      content:
+        '❌ Nur autorisierte Support-Mitglieder können dieses Ticket endgültig schließen.',
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  // =====================================
+  // Ticket löschen
+  // =====================================
+
+  try {
+    await interaction.reply({
+      content: '🗑️ Das Ticket wird endgültig geschlossen...',
+      flags: MessageFlags.Ephemeral
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    await thread.delete(
+      'Ticket wurde von einem autorisierten Support-Mitglied endgültig geschlossen'
+    );
+
+  } catch (error) {
+    console.error(
+      'Fehler beim endgültigen Löschen des Tickets:',
+      error
+    );
+  }
+
+  return;
+}
+
   
 });
 
