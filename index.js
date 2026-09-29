@@ -156,7 +156,7 @@ if (
   interaction.customId === 'discord_bot_modal'
 ) {
   const duration =
-    interaction.fields.getTextInputValue('hosting_duration');
+    interaction.fields.getTextInputValue('hosting_duration') || 'Keine Dauer angegeben.';
 
   const hosting =
     interaction.fields.getTextInputValue('hosting_yes_or_no');
@@ -202,58 +202,21 @@ if (
     }
   }
 
-  const ticketContainer = new ContainerBuilder()
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        '# ✅ Custom Discord Bot Bestellung'
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        `**👤 Kunde:** \`${interaction.user.username}\`\n` +
-        `**🆔 User-ID:** \`${interaction.user.id}\``
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        '### 🖥️ Hosting\n' +
-        `> ${hosting}\n` +
-        `> ${duration}\n` +
-
-        '### 📝 Wünsche\n' +
-        `> ${wishes}`
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>\`${interaction.user.username}\` hat einen neuen Discord Bot angefordert!||`
-      )
-    );
-
   await thread.send({
-    content: ticketContainer.toJSON(),
-    flags: MessageFlags.IsComponentsV2
+    content: `# ✅ Custom Discord Bot Bestellung
+
+**👤 Kunde:** \`${interaction.user.username}\`
+**🆔 User-ID:** \`${interaction.user.id}\`
+
+### 🖥️ Hosting
+> ${hosting}
+> ${duration}
+
+### 📝 Wünsche
+> ${wishes}
+
+> ||<@&${process.env.DISCORD_BOT_ROLE_ID}> \`${interaction.user.username}\` hat einen neuen Discord Bot angefordert!||`,
+    flags: MessageFlags.Ephemeral
   });
 
   await interaction.reply({
