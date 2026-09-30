@@ -487,10 +487,8 @@ client.on('interactionCreate', async (interaction) => {
       interaction.isChatInputCommand() &&
       interaction.commandName === 'ticket-support-bot'
     ) {
-
       await ticketSupportHandler.execute(interaction);
       return;
-
     }
 
     // =========================
@@ -501,24 +499,20 @@ client.on('interactionCreate', async (interaction) => {
       interaction.isButton() &&
       interaction.customId === 'buy_ticketSupportBot'
     ) {
-
       await ticketSupportHandler.buyButtonHandler(interaction);
       return;
-
     }
 
     // =========================
-    // Modal
+    // Bestellungs-Modal
     // =========================
 
     if (
       interaction.isModalSubmit() &&
       interaction.customId === 'ticketSupportBot_kaufen_modal'
     ) {
-
       await ticketSupportHandler.modalSubmitHandler(interaction);
       return;
-
     }
 
     // =========================
@@ -529,10 +523,8 @@ client.on('interactionCreate', async (interaction) => {
       interaction.isButton() &&
       interaction.customId === 'request_ticket_close'
     ) {
-
       await ticketSupportHandler.requestTicketCloseHandler(interaction);
       return;
-
     }
 
     // =========================
@@ -543,10 +535,8 @@ client.on('interactionCreate', async (interaction) => {
       interaction.isButton() &&
       interaction.customId === 'confirmed_ticket_close'
     ) {
-
       await ticketSupportHandler.confirmedTicketCloseHandler(interaction);
       return;
-
     }
 
     // =========================
@@ -557,10 +547,8 @@ client.on('interactionCreate', async (interaction) => {
       interaction.isButton() &&
       interaction.customId === 'final_ticket_close'
     ) {
-
       await ticketSupportHandler.finalTicketCloseHandler(interaction);
       return;
-
     }
 
   } catch (error) {
@@ -570,20 +558,31 @@ client.on('interactionCreate', async (interaction) => {
       error
     );
 
+    // Nur antworten, wenn die Interaction noch NICHT beantwortet wurde
     if (!interaction.replied && !interaction.deferred) {
 
-      await interaction.reply({
-        content:
-          '❌ Bei der Verarbeitung dieser Aktion ist ein Fehler aufgetreten.',
-        flags: MessageFlags.Ephemeral
-      });
+      try {
+
+        await interaction.reply({
+          content:
+            '❌ Bei der Verarbeitung dieser Aktion ist ein Fehler aufgetreten.',
+          flags: MessageFlags.Ephemeral
+        });
+
+      } catch (replyError) {
+
+        console.error(
+          '❌ Fehler beim Senden der Fehlerantwort:',
+          replyError
+        );
+
+      }
 
     }
 
   }
 
 });
-
 
 // =========================
 // /giveaway-bot
