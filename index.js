@@ -475,61 +475,115 @@ if (
 });
 
   
-// =========================
-// /ticket/support-bot
-// =========================
-
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isChatInputCommand()) {
-  if (interaction.commandName === 'ticket-support-bot') {
 
-    await ticketSupportHandler.execute(interaction);
+  try {
 
-    return;
+    // =========================
+    // /ticket/support-bot
+    // =========================
+
+    if (
+      interaction.isChatInputCommand() &&
+      interaction.commandName === 'ticket-support-bot'
+    ) {
+
+      await ticketSupportHandler.execute(interaction);
+      return;
+
+    }
+
+    // =========================
+    // Kaufen
+    // =========================
+
+    if (
+      interaction.isButton() &&
+      interaction.customId === 'buy_ticketSupportBot'
+    ) {
+
+      await ticketSupportHandler.buyButtonHandler(interaction);
+      return;
+
+    }
+
+    // =========================
+    // Modal
+    // =========================
+
+    if (
+      interaction.isModalSubmit() &&
+      interaction.customId === 'ticketSupportBot_kaufen_modal'
+    ) {
+
+      await ticketSupportHandler.modalSubmitHandler(interaction);
+      return;
+
+    }
+
+    // =========================
+    // Ticket schließen
+    // =========================
+
+    if (
+      interaction.isButton() &&
+      interaction.customId === 'request_ticket_close'
+    ) {
+
+      await ticketSupportHandler.requestTicketCloseHandler(interaction);
+      return;
+
+    }
+
+    // =========================
+    // Ticket schließen bestätigen
+    // =========================
+
+    if (
+      interaction.isButton() &&
+      interaction.customId === 'confirmed_ticket_close'
+    ) {
+
+      await ticketSupportHandler.confirmedTicketCloseHandler(interaction);
+      return;
+
+    }
+
+    // =========================
+    // Ticket endgültig löschen
+    // =========================
+
+    if (
+      interaction.isButton() &&
+      interaction.customId === 'final_ticket_close'
+    ) {
+
+      await ticketSupportHandler.finalTicketCloseHandler(interaction);
+      return;
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      '❌ Fehler bei Ticket/Support Interaction:',
+      error
+    );
+
+    if (!interaction.replied && !interaction.deferred) {
+
+      await interaction.reply({
+        content:
+          '❌ Bei der Verarbeitung dieser Aktion ist ein Fehler aufgetreten.',
+        flags: MessageFlags.Ephemeral
+      });
+
+    }
+
   }
-}
 
-
-// =========================
-// Kaufen Button
-// =========================
-
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'request_ticket_close'
-  ) {
-    await ticketSupportHandler.requestTicketCloseHandler(interaction);
-    return;
-  }
-
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'confirmed_ticket_close'
-  ) {
-    await ticketSupportHandler.confirmedTicketCloseHandler(interaction);
-    return;
-  }
-
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'final_ticket_close'
-  ) {
-    await ticketSupportHandler.finalTicketCloseHandler(interaction);
-    return;
-  }
-
-// =========================
-// Discord Bot Modal
-// =========================
-
-if (
-  interaction.isModalSubmit() &&
-  interaction.customId === 'ticketSupportBot_kaufen_modal'
-) {
-  await ticketSupportHandler.modalSubmitHandler(interaction);
-  return;
-}
 });
+
 
 // =========================
 // /giveaway-bot
