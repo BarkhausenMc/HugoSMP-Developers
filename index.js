@@ -496,11 +496,28 @@ client.on('interactionCreate', async (interaction) => {
 
   if (
     interaction.isButton() &&
-    interaction.customId === 'buy_ticketSupportBot'
+    interaction.customId === 'request_ticket_close'
   ) {
-    await ticketSupportHandler.buyButtonHandler(interaction);
+    await ticketSupportHandler.requestTicketCloseHandler(interaction);
     return;
   }
+
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'confirmed_ticket_close'
+  ) {
+    await ticketSupportHandler.confirmedTicketCloseHandler(interaction);
+    return;
+  }
+
+  if (
+    interaction.isButton() &&
+    interaction.customId === 'final_ticket_close'
+  ) {
+    await ticketSupportHandler.finalTicketCloseHandler(interaction);
+    return;
+  }
+
 // =========================
 // Discord Bot Modal
 // =========================
@@ -527,6 +544,38 @@ client.on('interactionCreate', async (interaction) => {
     return;
   }
 }
+if (
+  interaction.isButton() &&
+  interaction.customId === 'buy_GiveawayBot'
+) {
+  await giveawayHandler.buyButtonHandler(interaction);
+  return;
+}
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'giveaway_request_ticket_close'
+) {
+  await giveawayHandler.requestTicketCloseHandler(interaction);
+  return;
+}
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'giveaway_confirmed_ticket_close'
+) {
+  await giveawayHandler.confirmedTicketCloseHandler(interaction);
+  return;
+}
+
+if (
+  interaction.isButton() &&
+  interaction.customId === 'giveaway_final_ticket_close'
+) {
+  await giveawayHandler.finalTicketCloseHandler(interaction);
+  return;
+}
+
 
 
 // =========================
