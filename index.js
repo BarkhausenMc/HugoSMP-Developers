@@ -179,11 +179,12 @@ if (
   }
 
   const thread = await ticketChannel.threads.create({
-    name: `🤖 Discord Bot・${interaction.user.username}`,
+    name: `🤖 Discord Bot・${interaction.user.username}・${interaction.user.id}`,
     autoArchiveDuration: 10080,
     type: ChannelType.PrivateThread,
     reason: `Discord Bot Bestellung von ${interaction.user.tag}`
   });
+
 
   await thread.members.add(interaction.user.id);
 
@@ -345,14 +346,17 @@ if (
     // Ticket-Ersteller herausfinden
     // =====================================
 
-    const ticketOwnerId = thread.ownerId;
+    // Ticket-Ersteller aus dem Thread-Namen auslesen
+    const nameParts = thread.name.split('・');
+    const ticketOwnerId = nameParts[nameParts.length - 1];
 
-    if (!ticketOwnerId) {
+    if (!ticketOwnerId || !/^\d+$/.test(ticketOwnerId)) {
       return interaction.reply({
         content: '❌ Der Ersteller des Tickets konnte nicht gefunden werden.',
         flags: MessageFlags.Ephemeral
       });
     }
+
 
     // =====================================
     // Prüfen, ob der Klicker der Ersteller ist
