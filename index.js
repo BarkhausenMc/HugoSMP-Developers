@@ -287,10 +287,6 @@ if (
   return;
 }
 
-  // =========================
-// Ticket schließen - Bestätigung
-// =========================
-
 if (
   interaction.isButton() &&
   interaction.customId === 'request_ticket_close'
@@ -322,29 +318,14 @@ if (
   return;
 }
 
-
-// =========================
-// Ticket schließen - bestätigt
-// =========================
-
 if (
   interaction.isButton() &&
   interaction.customId === 'confirmed_ticket_close'
 ) {
   const thread = interaction.channel;
 
-  if (!thread.isThread()) {
-    return interaction.reply({
-      content: '❌ Dieser Button kann nur in einem Ticket verwendet werden.',
-      flags: MessageFlags.Ephemeral
-    });
-  }
-
   try {
 
-    // =====================================
-    // Ticket-Ersteller aus Thread-Namen lesen
-    // =====================================
 
     const nameParts = thread.name.split('・');
     const ticketOwnerId = nameParts[nameParts.length - 1];
@@ -357,10 +338,6 @@ if (
       });
     }
 
-    // =====================================
-    // Prüfen, ob der Klicker der Ersteller ist
-    // =====================================
-
     if (interaction.user.id !== ticketOwnerId) {
       return interaction.reply({
         content:
@@ -369,15 +346,7 @@ if (
       });
     }
 
-    // =====================================
-    // Ticket-Ersteller aus Private Thread entfernen
-    // =====================================
-
     await thread.members.remove(ticketOwnerId);
-
-    // =====================================
-    // Ephemeral Bestätigung
-    // =====================================
 
     const confirmedTicketCloseContainer = new ContainerBuilder()
       .addTextDisplayComponents(
@@ -396,9 +365,6 @@ if (
         MessageFlags.Ephemeral
     });
 
-    // =====================================
-    // Support über endgültige Schließung informieren
-    // =====================================
 
     const supportCloseContainer = new ContainerBuilder()
       .addTextDisplayComponents(
@@ -449,12 +415,6 @@ if (
   return;
 }
 
-
-
-// =========================
-// Ticket endgültig schließen
-// =========================
-
 if (
   interaction.isButton() &&
   interaction.customId === 'final_ticket_close'
@@ -468,10 +428,6 @@ if (
       flags: MessageFlags.Ephemeral
     });
   }
-
-  // =====================================
-  // Support-Rolle prüfen
-  // =====================================
 
   const supportRoleId = process.env.DISCORD_BOT_ROLE_ID;
 
@@ -493,11 +449,6 @@ if (
       flags: MessageFlags.Ephemeral
     });
   }
-
-  // =====================================
-  // Ticket löschen
-  // =====================================
-
   try {
     await interaction.reply({
       content: '🗑️ Das Ticket wird endgültig geschlossen...',
