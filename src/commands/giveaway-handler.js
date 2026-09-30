@@ -117,7 +117,7 @@ module.exports = {
 
     const duration = new TextInputBuilder()
       .setCustomId('hosting_duration')
-      .setLabel('Wie lange möchtest du deinen Bot Hosten lassen?')
+      .setLabel('Wie lange soll der Bot gehostet werden?')
       .setPlaceholder('z.B. 3 Monate, 1 Jahr')
       .setStyle(TextInputStyle.Short)
       .setRequired(false);

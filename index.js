@@ -120,7 +120,7 @@ client.on('interactionCreate', async (interaction) => {
 
     const duration = new TextInputBuilder()
       .setCustomId('hosting_duration')
-      .setLabel('Wie lange möchtest du dein Bot Hosten lassen?')
+      .setLabel('Wie lange soll der Bot gehostet werden?')
       .setPlaceholder('z.B. 3 Monate, 1 Jahr')
 
       .setStyle(TextInputStyle.Short)
