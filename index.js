@@ -1,29 +1,29 @@
 require('dotenv').config();
 
 const {
-  ContainerBuilder,
-  TextDisplayBuilder,
-  SeparatorBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
+  MessageFlags,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
-  ButtonStyle,
-  MessageFlags,
-  ChannelType,
-  PermissionFlagsBits
+  ActionRowBuilder
 } = require('discord.js');
 
 const { client } = require('./src/client-setup');
 const { updateMemberCount } = require('./src/member-counter');
+
 const rulesHandler = require('./src/commands/rules-handler');
 const ourTeamHandler = require('./src/commands/our-team-handler');
 const botShopHandler = require('./src/commands/bot-shop-handler');
 const ticketSupportHandler = require('./src/commands/ticket-support-handler');
 const giveawayHandler = require('./src/commands/giveaway-handler');
 
+
+// =====================================================
+// Bot Ready
+// =====================================================
+
 client.once('clientReady', async () => {
+
   console.log(`Logged in as ${client.user.tag}`);
 
   const guild = client.guilds.cache.first();
@@ -33,540 +33,543 @@ client.once('clientReady', async () => {
   }
 
   setInterval(() => {
+
     if (guild) {
       updateMemberCount(guild);
     }
+
   }, 60000);
+
 });
+
+
+// =====================================================
+// Member Join
+// =====================================================
 
 client.on('guildMemberAdd', async (member) => {
 
   try {
-    await member.roles.add(process.env.MEMBER_ROLE_ID);
+
+    await member.roles.add(
+      process.env.MEMBER_ROLE_ID
+    );
+
   } catch (error) {
-    console.error('Fehler beim Vergeben der Rolle:', error);
+
+    console.error(
+      'Fehler beim Vergeben der Rolle:',
+      error
+    );
+
   }
 
   setTimeout(() => {
+
     updateMemberCount(member.guild);
+
   }, 2000);
+
 });
+
+
+// =====================================================
+// Member Leave
+// =====================================================
 
 client.on('guildMemberRemove', async (member) => {
+
   setTimeout(() => {
+
     updateMemberCount(member.guild);
+
   }, 2000);
+
 });
 
 
-  // =========================
-  // /our-team
-   // =========================
-
-client.on('interactionCreate', async (interaction) =>{
-  if (!interaction.isChatInputCommand()) return;
-
-  if (interaction.commandName === 'our-team')  {
-    await ourTeamHandler(interaction);
-  }
-});
-
-  // =========================
-  // /rules
-   // =========================
+// =====================================================
+// EIN EINZIGER Interaction Handler
+// =====================================================
 
 client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === 'rules') {
-    await rulesHandler(interaction);
-  }
-});
+  try {
 
+    // =================================================
+    // Slash Commands
+    // =================================================
 
+    if (interaction.isChatInputCommand()) {
 
+      // /our-team
+      if (interaction.commandName === 'our-team') {
 
-client.on('interactionCreate', async (interaction) => {
-  if (interaction.isChatInputCommand()) {
+        await ourTeamHandler(interaction);
+        return;
 
-    if (interaction.commandName === 'bot-shop') {
-      await botShopHandler(interaction);
-
-      return;
-    }
-
-    return;
-  }
-
-  // =========================
-  // Discord Bot Button
-  // =========================
-
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'discord_bot'
-  ) {
-    const modal = new ModalBuilder()
-      .setCustomId('discord_bot_modal')
-      .setTitle('Discord Bot bestellen');
-
-    const hosting = new TextInputBuilder()
-      .setCustomId('hosting_yes_or_no')
-      .setLabel('Möchtest du deinen Bot direkt bei uns Hosten?')
-      .setPlaceholder('Ja oder Nein')
-
-      .setStyle(TextInputStyle.Short)
-      .setRequired(true);
-
-    const duration = new TextInputBuilder()
-      .setCustomId('hosting_duration')
-      .setLabel('Wie lange soll der Bot gehostet werden?')
-      .setPlaceholder('z.B. 3 Monate, 1 Jahr')
-
-      .setStyle(TextInputStyle.Short)
-      .setRequired(false);
-
-    const wishesInput = new TextInputBuilder()
-      .setCustomId('discord_bot_wishes')
-      .setLabel('Was soll dein Discord Bot können?')
-      .setPlaceholder(
-        'Beschreibe hier möglichst genau deine Wünsche...'
-      )
-      .setStyle(TextInputStyle.Paragraph)
-      .setRequired(true)
-      .setMinLength(0)
-      .setMaxLength(4000);
-
-    modal.addComponents(
-      new ActionRowBuilder().addComponents(hosting),
-      new ActionRowBuilder().addComponents(duration),
-      new ActionRowBuilder().addComponents(wishesInput)
-    );
-
-    await interaction.showModal(modal);
-
-    return;
-  }
-
-// =========================
-// Discord Bot Modal
-// =========================
-
-if (
-  interaction.isModalSubmit() &&
-  interaction.customId === 'discord_bot_modal'
-) {
-
-  const duration =
-    interaction.fields.getTextInputValue('hosting_duration');
-
-  const hosting =
-    interaction.fields.getTextInputValue('hosting_yes_or_no');
-  
-  const wishes =
-    interaction.fields.getTextInputValue('discord_bot_wishes') || 'Keine weiteren Wünsche angegeben.';
-
-  const ticketChannel =
-    interaction.guild.channels.cache.get(
-      process.env.DISCORD_BOT_CHANNEL_ID
-    );
-
-  if (!ticketChannel) {
-    return interaction.reply({
-      content: '❌ Der Ticket-Channel wurde nicht gefunden.',
-      flags: MessageFlags.Ephemeral
-    });
-  }
-
-  const thread = await ticketChannel.threads.create({
-    name: `🤖 Discord Bot・${interaction.user.username}・${interaction.user.id}`,
-    autoArchiveDuration: 10080,
-    type: ChannelType.PrivateThread,
-    reason: `Discord Bot Bestellung von ${interaction.user.tag}`
-  });
-
-
-  await thread.members.add(interaction.user.id);
-
-  const supportRole = interaction.guild.roles.cache.get(
-    process.env.DISCORD_BOT_ROLE_ID
-  );
-
-  if (supportRole) {
-    for (const member of supportRole.members.values()) {
-      try {
-        await thread.members.add(member.id);
-      } catch (error) {
-        console.error(
-          `Fehler beim Hinzufügen von ${member.user.tag}:`,
-          error
-        );
       }
-    }
-  }
-
-  const ticketContainer = new ContainerBuilder()
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        '# ✅ Custom Discord Bot Bestellung'
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        `**👤 Kunde:** \`${interaction.user.username}\`\n` +
-        `**🆔 User-ID:** \`${interaction.user.id}\``
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        '### 🖥️ Hosting\n' +
-        `> ${hosting}\n` +
-        `> ${duration}\n` +
-
-        '### 📝 Wünsche\n' +
-        `> ${wishes}`
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n> \`${interaction.user.username}\` hat einene neuen Discord Bot angefordert!||`
-      )
-    )
-
-    .addSeparatorComponents(
-      new SeparatorBuilder()
-        .setDivider(true)
-        .setSpacing(1)
-    )
-
-    .addActionRowComponents(
-      new ActionRowBuilder().addComponents(
-
-        new ButtonBuilder()
-        .setCustomId('request_ticket_close')
-        .setLabel('Ticket Schließen')
-        .setEmoji('🔒')
-        .setStyle(ButtonStyle.Secondary)
-      )
-    )
-
-  await thread.send({
-    components: [ticketContainer],
-    flags: MessageFlags.IsComponentsV2
-  });
-
-  await interaction.reply({
-    content:
-      `✅ **Deine Bestellung wurde erfolgreich erstellt!**\n\n` +
-      `🎫 Dein Ticket: <#${thread.id}>`,
-    flags: MessageFlags.Ephemeral
-  });
-
-  return;
-}
-
-if (
-  interaction.isButton() &&
-  interaction.customId === 'request_ticket_close'
-) {
-  const requestTicketCloseContainer = new ContainerBuilder()
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent(
-        '# 🔒 Ticket schließen\n\n' +
-        'Willst du das Ticket wirklich schließen?\n\n' +
-        'Wenn du fortfährst, kannst du danach nicht mehr in diesem Ticket schreiben.'
-      )
-    )
-
-    .addActionRowComponents(
-      new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId('confirmed_ticket_close')
-          .setLabel('Bestätigen')
-          .setEmoji('✅')
-          .setStyle(ButtonStyle.Success)
-      )
-    );
-
-  await interaction.reply({
-    components: [requestTicketCloseContainer],
-    flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-  });
-
-  return;
-}
-
-if (
-  interaction.isButton() &&
-  interaction.customId === 'confirmed_ticket_close'
-) {
-  const thread = interaction.channel;
-
-  try {
 
 
-    const nameParts = thread.name.split('・');
-    const ticketOwnerId = nameParts[nameParts.length - 1];
+      // /rules
+      if (interaction.commandName === 'rules') {
 
-    if (!ticketOwnerId || !/^\d+$/.test(ticketOwnerId)) {
-      return interaction.reply({
-        content:
-          '❌ Der Ersteller des Tickets konnte nicht gefunden werden.',
-        flags: MessageFlags.Ephemeral
-      });
+        await rulesHandler(interaction);
+        return;
+
+      }
+
+
+      // /bot-shop
+      if (interaction.commandName === 'bot-shop') {
+
+        await botShopHandler(interaction);
+        return;
+
+      }
+
+
+      // /ticket-support-bot
+      if (interaction.commandName === 'ticket-support-bot') {
+
+        await ticketSupportHandler.execute(interaction);
+        return;
+
+      }
+
+
+      // /giveaway-bot
+      if (interaction.commandName === 'giveaway-bot') {
+
+        await giveawayHandler.execute(interaction);
+        return;
+
+      }
+
+      return;
     }
 
-    if (interaction.user.id !== ticketOwnerId) {
-      return interaction.reply({
-        content:
-          '❌ Nur der Ersteller dieses Tickets kann es schließen.',
-        flags: MessageFlags.Ephemeral
-      });
+
+    // =================================================
+    // Buttons
+    // =================================================
+
+    if (interaction.isButton()) {
+
+
+      // =================================================
+      // Custom Discord Bot
+      // =================================================
+
+      if (
+        interaction.customId === 'discord_bot'
+      ) {
+
+        const modal = new ModalBuilder()
+          .setCustomId('discord_bot_modal')
+          .setTitle('Discord Bot bestellen');
+
+
+        const hosting = new TextInputBuilder()
+          .setCustomId('hosting_yes_or_no')
+          .setLabel(
+            'Möchtest du deinen Bot direkt bei uns Hosten?'
+          )
+          .setPlaceholder('Ja oder Nein')
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true);
+
+
+        const duration = new TextInputBuilder()
+          .setCustomId('hosting_duration')
+          .setLabel(
+            'Wie lange soll der Bot gehostet werden?'
+          )
+          .setPlaceholder(
+            'z.B. 3 Monate, 1 Jahr'
+          )
+          .setStyle(TextInputStyle.Short)
+          .setRequired(false);
+
+
+        const wishesInput = new TextInputBuilder()
+          .setCustomId('discord_bot_wishes')
+          .setLabel(
+            'Was soll dein Discord Bot können?'
+          )
+          .setPlaceholder(
+            'Beschreibe hier möglichst genau deine Wünsche...'
+          )
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true)
+          .setMaxLength(4000);
+
+
+        modal.addComponents(
+
+          new ActionRowBuilder()
+            .addComponents(hosting),
+
+          new ActionRowBuilder()
+            .addComponents(duration),
+
+          new ActionRowBuilder()
+            .addComponents(wishesInput)
+
+        );
+
+
+        await interaction.showModal(modal);
+
+        return;
+      }
+
+
+      // =================================================
+      // Ticket Support - Kaufen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'buy_ticketSupportBot'
+      ) {
+
+        await ticketSupportHandler.buyButtonHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Ticket Support - Ticket schließen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'request_ticket_close'
+      ) {
+
+        await ticketSupportHandler.requestTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Ticket Support - Schließen bestätigen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'confirmed_ticket_close'
+      ) {
+
+        await ticketSupportHandler.confirmedTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Ticket Support - endgültig löschen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'final_ticket_close'
+      ) {
+
+        await ticketSupportHandler.finalTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Giveaway - Kaufen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'buy_GiveawayBot'
+      ) {
+
+        await giveawayHandler.buyButtonHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Giveaway - Ticket schließen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'giveaway_request_ticket_close'
+      ) {
+
+        await giveawayHandler.requestTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Giveaway - Schließen bestätigen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'giveaway_confirmed_ticket_close'
+      ) {
+
+        await giveawayHandler.confirmedTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Giveaway - endgültig löschen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'giveaway_final_ticket_close'
+      ) {
+
+        await giveawayHandler.finalTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      return;
     }
 
-    await thread.members.remove(ticketOwnerId);
 
-    const confirmedTicketCloseContainer = new ContainerBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          '# 🔒 Ticket geschlossen\n\n' +
-          'Du hast das Ticket erfolgreich geschlossen.\n\n' +
-          'Du kannst dieses Ticket nun nicht mehr bearbeiten.\n' +
-          'Das Support-Team kann das Ticket weiterhin bearbeiten.'
-        )
-      );
+    // =================================================
+    // Modal Submits
+    // =================================================
 
-    await interaction.reply({
-      components: [confirmedTicketCloseContainer],
-      flags:
-        MessageFlags.IsComponentsV2 |
-        MessageFlags.Ephemeral
-    });
+    if (interaction.isModalSubmit()) {
 
 
-    const supportCloseContainer = new ContainerBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          '# 🛑 Ticket wartet auf endgültige Schließung\n\n' +
-          'Der Ticket-Ersteller hat das Ticket geschlossen.\n\n' +
-          'Das Ticket kann nun von einem autorisierten Support-Mitglied endgültig gelöscht werden.'
-        )
-      )
+      // =================================================
+      // Custom Discord Bot Modal
+      // =================================================
 
-      .addSeparatorComponents(
-        new SeparatorBuilder()
-          .setDivider(true)
-          .setSpacing(1)
-      )
+      if (
+        interaction.customId ===
+        'discord_bot_modal'
+      ) {
 
-      .addActionRowComponents(
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId('final_ticket_close')
-            .setLabel('Ticket endgültig schließen')
-            .setEmoji('🗑️')
-            .setStyle(ButtonStyle.Danger)
-        )
-      );
+        const duration =
+          interaction.fields.getTextInputValue(
+            'hosting_duration'
+          );
 
-    await thread.send({
-      components: [supportCloseContainer],
-      flags: MessageFlags.IsComponentsV2
-    });
+        const hosting =
+          interaction.fields.getTextInputValue(
+            'hosting_yes_or_no'
+          );
+
+        const wishes =
+          interaction.fields.getTextInputValue(
+            'discord_bot_wishes'
+          ) ||
+          'Keine weiteren Wünsche angegeben.';
+
+
+        const ticketChannel =
+          interaction.guild.channels.cache.get(
+            process.env.DISCORD_BOT_CHANNEL_ID
+          );
+
+
+        if (!ticketChannel) {
+
+          return interaction.reply({
+
+            content:
+              '❌ Der Ticket-Channel wurde nicht gefunden.',
+
+            flags:
+              MessageFlags.Ephemeral
+
+          });
+
+        }
+
+
+        const thread =
+          await ticketChannel.threads.create({
+
+            name:
+              `🤖 Discord Bot・${interaction.user.username}・${interaction.user.id}`,
+
+            autoArchiveDuration: 10080,
+
+            type: 12,
+
+            reason:
+              `Discord Bot Bestellung von ${interaction.user.tag}`
+
+          });
+
+
+        await thread.members.add(
+          interaction.user.id
+        );
+
+
+        const supportRole =
+          interaction.guild.roles.cache.get(
+            process.env.DISCORD_BOT_ROLE_ID
+          );
+
+
+        if (supportRole) {
+
+          for (
+            const member
+            of supportRole.members.values()
+          ) {
+
+            try {
+
+              await thread.members.add(
+                member.id
+              );
+
+            } catch (error) {
+
+              console.error(
+                `Fehler beim Hinzufügen von ${member.user.tag}:`,
+                error
+              );
+
+            }
+
+          }
+
+        }
+
+
+        await thread.send({
+
+          content:
+            `# ✅ Custom Discord Bot Bestellung\n\n` +
+            `**👤 Kunde:** ${interaction.user}\n` +
+            `**🆔 User-ID:** \`${interaction.user.id}\`\n\n` +
+            `### 🖥️ Hosting\n` +
+            `> ${hosting}\n` +
+            `> ${duration}\n\n` +
+            `### 📝 Wünsche\n` +
+            `> ${wishes}\n\n` +
+            `<@&${process.env.DISCORD_BOT_ROLE_ID}>`,
+
+        });
+
+
+        await interaction.reply({
+
+          content:
+            `✅ **Deine Bestellung wurde erfolgreich erstellt!**\n\n` +
+            `🎫 Dein Ticket: <#${thread.id}>`,
+
+          flags:
+            MessageFlags.Ephemeral
+
+        });
+
+
+        return;
+      }
+
+
+      // =================================================
+      // Ticket Support Bestellung
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'ticketSupportBot_kaufen_modal'
+      ) {
+
+        await ticketSupportHandler.modalSubmitHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Giveaway Bestellung
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'GiveawayBot_kaufen_modal'
+      ) {
+
+        await giveawayHandler.modalSubmitHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      return;
+    }
 
   } catch (error) {
 
     console.error(
-      'Fehler beim Schließen des Tickets:',
+      '❌ Fehler bei Interaction:',
       error
     );
 
-    if (!interaction.replied) {
-      await interaction.reply({
-        content:
-          '❌ Beim Schließen des Tickets ist ein Fehler aufgetreten.',
-        flags: MessageFlags.Ephemeral
-      });
-    }
-  }
 
-  return;
-}
-
-if (
-  interaction.isButton() &&
-  interaction.customId === 'final_ticket_close'
-) {
-  const thread = interaction.channel;
-
-  if (!thread.isThread()) {
-    return interaction.reply({
-      content:
-        '❌ Dieser Button kann nur in einem Ticket verwendet werden.',
-      flags: MessageFlags.Ephemeral
-    });
-  }
-
-  const supportRoleId = process.env.DISCORD_BOT_ROLE_ID;
-
-  if (!supportRoleId) {
-    return interaction.reply({
-      content:
-        '❌ DISCORD_BOT_ROLE_ID ist nicht konfiguriert.',
-      flags: MessageFlags.Ephemeral
-    });
-  }
-
-  const hasSupportRole =
-    interaction.member.roles.cache.has(supportRoleId);
-
-  if (!hasSupportRole) {
-    return interaction.reply({
-      content:
-        '❌ Nur autorisierte Support-Mitglieder können dieses Ticket endgültig schließen.',
-      flags: MessageFlags.Ephemeral
-    });
-  }
-  try {
-    await interaction.reply({
-      content: '🗑️ Das Ticket wird endgültig geschlossen...',
-      flags: MessageFlags.Ephemeral
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    await thread.delete(
-      'Ticket wurde von einem autorisierten Support-Mitglied endgültig geschlossen'
-    );
-
-  } catch (error) {
-    console.error(
-      'Fehler beim endgültigen Löschen des Tickets:',
-      error
-    );
-  }
-
-  return;
-}
-
-  
-});
-
-  
-client.on('interactionCreate', async (interaction) => {
-
-  try {
-
-    // =========================
-    // /ticket/support-bot
-    // =========================
+    // =================================================
+    // Fehlerantwort nur senden,
+    // wenn die Interaction noch offen ist
+    // =================================================
 
     if (
-      interaction.isChatInputCommand() &&
-      interaction.commandName === 'ticket-support-bot'
+      !interaction.replied &&
+      !interaction.deferred
     ) {
-      await ticketSupportHandler.execute(interaction);
-      return;
-    }
-
-    // =========================
-    // Kaufen
-    // =========================
-
-    if (
-      interaction.isButton() &&
-      interaction.customId === 'buy_ticketSupportBot'
-    ) {
-      await ticketSupportHandler.buyButtonHandler(interaction);
-      return;
-    }
-
-    // =========================
-    // Bestellungs-Modal
-    // =========================
-
-    if (
-      interaction.isModalSubmit() &&
-      interaction.customId === 'ticketSupportBot_kaufen_modal'
-    ) {
-      await ticketSupportHandler.modalSubmitHandler(interaction);
-      return;
-    }
-
-    // =========================
-    // Ticket schließen
-    // =========================
-
-    if (
-      interaction.isButton() &&
-      interaction.customId === 'request_ticket_close'
-    ) {
-      await ticketSupportHandler.requestTicketCloseHandler(interaction);
-      return;
-    }
-
-    // =========================
-    // Ticket schließen bestätigen
-    // =========================
-
-    if (
-      interaction.isButton() &&
-      interaction.customId === 'confirmed_ticket_close'
-    ) {
-      await ticketSupportHandler.confirmedTicketCloseHandler(interaction);
-      return;
-    }
-
-    // =========================
-    // Ticket endgültig löschen
-    // =========================
-
-    if (
-      interaction.isButton() &&
-      interaction.customId === 'final_ticket_close'
-    ) {
-      await ticketSupportHandler.finalTicketCloseHandler(interaction);
-      return;
-    }
-
-  } catch (error) {
-
-    console.error(
-      '❌ Fehler bei Ticket/Support Interaction:',
-      error
-    );
-
-    // Nur antworten, wenn die Interaction noch NICHT beantwortet wurde
-    if (!interaction.replied && !interaction.deferred) {
 
       try {
 
         await interaction.reply({
+
           content:
             '❌ Bei der Verarbeitung dieser Aktion ist ein Fehler aufgetreten.',
-          flags: MessageFlags.Ephemeral
+
+          flags:
+            MessageFlags.Ephemeral
+
         });
 
       } catch (replyError) {
@@ -584,75 +587,11 @@ client.on('interactionCreate', async (interaction) => {
 
 });
 
-// =========================
-// /giveaway-bot
-// =========================
 
-client.on('interactionCreate', async (interaction) => {
-  if (interaction.isChatInputCommand()) {
-  if (interaction.commandName === 'giveaway-bot') {
+// =====================================================
+// Login
+// =====================================================
 
-    await giveawayHandler.execute(interaction);
-
-    return;
-  }
-}
-if (
-  interaction.isButton() &&
-  interaction.customId === 'buy_GiveawayBot'
-) {
-  await giveawayHandler.buyButtonHandler(interaction);
-  return;
-}
-
-if (
-  interaction.isButton() &&
-  interaction.customId === 'giveaway_request_ticket_close'
-) {
-  await giveawayHandler.requestTicketCloseHandler(interaction);
-  return;
-}
-
-if (
-  interaction.isButton() &&
-  interaction.customId === 'giveaway_confirmed_ticket_close'
-) {
-  await giveawayHandler.confirmedTicketCloseHandler(interaction);
-  return;
-}
-
-if (
-  interaction.isButton() &&
-  interaction.customId === 'giveaway_final_ticket_close'
-) {
-  await giveawayHandler.finalTicketCloseHandler(interaction);
-  return;
-}
-
-
-
-// =========================
-// Kaufen Button
-// =========================
-
-  if (
-    interaction.isButton() &&
-    interaction.customId === 'buy_GiveawayBot'
-  ) {
-    await giveawayHandler.buyButtonHandler(interaction);
-    return;
-  }
-// =========================
-// Discord Bot Modal
-// =========================
-
-if (
-  interaction.isModalSubmit() &&
-  interaction.customId === 'GiveawayBot_kaufen_modal'
-) {
-  await giveawayHandler.modalSubmitHandler(interaction);
-  return;
-}
-});
-
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(
+  process.env.DISCORD_BOT_TOKEN
+);
