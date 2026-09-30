@@ -343,20 +343,19 @@ if (
   try {
 
     // =====================================
-    // Ticket-Ersteller herausfinden
+    // Ticket-Ersteller aus Thread-Namen lesen
     // =====================================
 
-    // Ticket-Ersteller aus dem Thread-Namen auslesen
     const nameParts = thread.name.split('・');
     const ticketOwnerId = nameParts[nameParts.length - 1];
 
     if (!ticketOwnerId || !/^\d+$/.test(ticketOwnerId)) {
       return interaction.reply({
-        content: '❌ Der Ersteller des Tickets konnte nicht gefunden werden.',
+        content:
+          '❌ Der Ersteller des Tickets konnte nicht gefunden werden.',
         flags: MessageFlags.Ephemeral
       });
     }
-
 
     // =====================================
     // Prüfen, ob der Klicker der Ersteller ist
@@ -371,18 +370,10 @@ if (
     }
 
     // =====================================
-    // Ersteller darf nicht mehr schreiben
+    // Ticket-Ersteller aus Private Thread entfernen
     // =====================================
 
-    await thread.permissionOverwrites.edit(
-      ticketOwnerId,
-      {
-        SendMessagesInThreads: false
-      },
-      {
-        reason: 'Ticket-Ersteller hat das Ticket geschlossen'
-      }
-    );
+    await thread.members.remove(ticketOwnerId);
 
     // =====================================
     // Ephemeral Bestätigung
@@ -393,18 +384,20 @@ if (
         new TextDisplayBuilder().setContent(
           '# 🔒 Ticket geschlossen\n\n' +
           'Du hast das Ticket erfolgreich geschlossen.\n\n' +
-          'Du kannst in diesem Ticket nun nicht mehr schreiben.\n' +
+          'Du kannst dieses Ticket nun nicht mehr bearbeiten.\n' +
           'Das Support-Team kann das Ticket weiterhin bearbeiten.'
         )
       );
 
     await interaction.reply({
       components: [confirmedTicketCloseContainer],
-      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+      flags:
+        MessageFlags.IsComponentsV2 |
+        MessageFlags.Ephemeral
     });
 
     // =====================================
-    // Öffentlicher Container für Support
+    // Support über endgültige Schließung informieren
     // =====================================
 
     const supportCloseContainer = new ContainerBuilder()
@@ -438,6 +431,7 @@ if (
     });
 
   } catch (error) {
+
     console.error(
       'Fehler beim Schließen des Tickets:',
       error
@@ -454,6 +448,7 @@ if (
 
   return;
 }
+
 
 
 // =========================
