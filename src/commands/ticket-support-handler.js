@@ -480,7 +480,7 @@ module.exports = {
 
               '# 🔒 Ticket geschlossen\n\n' +
               'Du hast das Ticket erfolgreich geschlossen.\n\n' +
-              'Du kannst dieses Ticket nun nicht mehr bearbeiten.\n' +
+              'Du kannst in diesem Ticket nun nicht mehr schreiben.\n' +
               'Das Support-Team kann das Ticket weiterhin bearbeiten.'
 
             )
