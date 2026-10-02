@@ -5,7 +5,13 @@ const {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
-  ActionRowBuilder
+  ActionRowBuilder,
+  ContainerBuilder,
+  TextDisplayBuilder,
+  SeparatorBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelType
 } = require('discord.js');
 
 const { client } = require('./src/client-setup');
@@ -361,6 +367,57 @@ client.on('interactionCreate', async (interaction) => {
       }
 
 
+      // =================================================
+      // Custom Discord Bot - Ticket schließen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'discord_bot_request_ticket_close'
+      ) {
+
+        await discordBotRequestTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Custom Discord Bot - Schließen bestätigen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'discord_bot_confirmed_ticket_close'
+      ) {
+
+        await discordBotConfirmedTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // Custom Discord Bot - endgültig löschen
+      // =================================================
+
+      if (
+        interaction.customId ===
+        'discord_bot_final_ticket_close'
+      ) {
+
+        await discordBotFinalTicketCloseHandler(
+          interaction
+        );
+
+        return;
+      }
+
+
       return;
     }
 
@@ -384,12 +441,15 @@ client.on('interactionCreate', async (interaction) => {
         const duration =
           interaction.fields.getTextInputValue(
             'hosting_duration'
-          );
+          ) ||
+          'Kein Hosting Duration angegeben.';
+
 
         const hosting =
           interaction.fields.getTextInputValue(
             'hosting_yes_or_no'
           );
+
 
         const wishes =
           interaction.fields.getTextInputValue(
@@ -419,6 +479,10 @@ client.on('interactionCreate', async (interaction) => {
         }
 
 
+        // =================================================
+        // Private Ticket Thread erstellen
+        // =================================================
+
         const thread =
           await ticketChannel.threads.create({
 
@@ -427,7 +491,8 @@ client.on('interactionCreate', async (interaction) => {
 
             autoArchiveDuration: 10080,
 
-            type: 12,
+            type:
+              ChannelType.PrivateThread,
 
             reason:
               `Discord Bot Bestellung von ${interaction.user.tag}`
@@ -435,10 +500,18 @@ client.on('interactionCreate', async (interaction) => {
           });
 
 
+        // =================================================
+        // Kunden hinzufügen
+        // =================================================
+
         await thread.members.add(
           interaction.user.id
         );
 
+
+        // =================================================
+        // Support-Team hinzufügen
+        // =================================================
 
         const supportRole =
           interaction.guild.roles.cache.get(
@@ -449,8 +522,7 @@ client.on('interactionCreate', async (interaction) => {
         if (supportRole) {
 
           for (
-            const member
-            of supportRole.members.values()
+            const member of supportRole.members.values()
           ) {
 
             try {
@@ -473,21 +545,151 @@ client.on('interactionCreate', async (interaction) => {
         }
 
 
+        // =================================================
+        // Ticket Container
+        // =================================================
+
+        const ticketContainer =
+          new ContainerBuilder()
+
+            .addTextDisplayComponents(
+
+              new TextDisplayBuilder()
+                .setContent(
+                  '# 🤖 Custom Discord Bot Bestellung'
+                )
+
+            )
+
+            .addSeparatorComponents(
+
+              new SeparatorBuilder()
+                .setDivider(true)
+                .setSpacing(1)
+
+            )
+
+            .addTextDisplayComponents(
+
+              new TextDisplayBuilder()
+                .setContent(
+                  '**🤖 Bot:** `Custom Discord Bot`'
+                )
+
+            )
+
+            .addSeparatorComponents(
+
+              new SeparatorBuilder()
+                .setDivider(true)
+                .setSpacing(1)
+
+            )
+
+            .addTextDisplayComponents(
+
+              new TextDisplayBuilder()
+                .setContent(
+
+                  `**👤 Kunde:** \`${interaction.user.username}\`\n` +
+                  `**🆔 User-ID:** \`${interaction.user.id}\``
+
+                )
+
+            )
+
+            .addSeparatorComponents(
+
+              new SeparatorBuilder()
+                .setDivider(true)
+                .setSpacing(1)
+
+            )
+
+            .addTextDisplayComponents(
+
+              new TextDisplayBuilder()
+                .setContent(
+
+                  '### 🖥️ Hosting\n' +
+                  `> ${hosting}\n` +
+                  `> ${duration}\n\n` +
+
+                  '### 📝 Wünsche\n' +
+                  `> ${wishes}`
+
+                )
+
+            )
+
+            .addSeparatorComponents(
+
+              new SeparatorBuilder()
+                .setDivider(true)
+                .setSpacing(1)
+
+            )
+
+            .addTextDisplayComponents(
+
+              new TextDisplayBuilder()
+                .setContent(
+
+                  `> ||<@&${process.env.DISCORD_BOT_ROLE_ID}>,\n` +
+                  `> \`${interaction.user.username}\` hat einen neuen Custom Discord Bot angefordert!||`
+
+                )
+
+            )
+
+            .addSeparatorComponents(
+
+              new SeparatorBuilder()
+                .setDivider(true)
+                .setSpacing(1)
+
+            )
+
+            .addActionRowComponents(
+
+              new ActionRowBuilder()
+                .addComponents(
+
+                  new ButtonBuilder()
+                    .setCustomId(
+                      'discord_bot_request_ticket_close'
+                    )
+                    .setLabel(
+                      'Ticket Schließen'
+                    )
+                    .setEmoji('🔒')
+                    .setStyle(
+                      ButtonStyle.Secondary
+                    )
+
+                )
+
+            );
+
+
+        // =================================================
+        // Container senden
+        // =================================================
+
         await thread.send({
 
-          content:
-            `# ✅ Custom Discord Bot Bestellung\n\n` +
-            `**👤 Kunde:** ${interaction.user}\n` +
-            `**🆔 User-ID:** \`${interaction.user.id}\`\n\n` +
-            `### 🖥️ Hosting\n` +
-            `> ${hosting}\n` +
-            `> ${duration}\n\n` +
-            `### 📝 Wünsche\n` +
-            `> ${wishes}\n\n` +
-            `<@&${process.env.DISCORD_BOT_ROLE_ID}>`,
+          components:
+            [ticketContainer],
+
+          flags:
+            MessageFlags.IsComponentsV2
 
         });
 
+
+        // =================================================
+        // User informieren
+        // =================================================
 
         await interaction.reply({
 
@@ -586,6 +788,415 @@ client.on('interactionCreate', async (interaction) => {
   }
 
 });
+
+
+// =====================================================
+// Custom Discord Bot
+// Ticket schließen - Bestätigung
+// =====================================================
+
+async function discordBotRequestTicketCloseHandler(
+  interaction
+) {
+
+  const requestTicketCloseContainer =
+    new ContainerBuilder()
+
+      .addTextDisplayComponents(
+
+        new TextDisplayBuilder()
+          .setContent(
+
+            '# 🔒 Ticket schließen\n\n' +
+            'Willst du das Ticket wirklich schließen?\n\n' +
+            'Wenn du fortfährst, kannst du danach nicht mehr in diesem Ticket schreiben.'
+
+          )
+
+      )
+
+      .addActionRowComponents(
+
+        new ActionRowBuilder()
+          .addComponents(
+
+            new ButtonBuilder()
+              .setCustomId(
+                'discord_bot_confirmed_ticket_close'
+              )
+              .setLabel(
+                'Bestätigen'
+              )
+              .setEmoji('✅')
+              .setStyle(
+                ButtonStyle.Success
+              )
+
+          )
+
+      );
+
+
+  await interaction.reply({
+
+    components:
+      [requestTicketCloseContainer],
+
+    flags:
+      MessageFlags.IsComponentsV2 |
+      MessageFlags.Ephemeral
+
+  });
+
+}
+
+
+// =====================================================
+// Custom Discord Bot
+// Ticket schließen - bestätigt
+// =====================================================
+
+async function discordBotConfirmedTicketCloseHandler(
+  interaction
+) {
+
+  const thread =
+    interaction.channel;
+
+
+  // ===================================================
+  // Thread prüfen
+  // ===================================================
+
+  if (
+    !thread ||
+    !thread.isThread()
+  ) {
+
+    return interaction.reply({
+
+      content:
+        '❌ Dieser Button kann nur in einem Ticket verwendet werden.',
+
+      flags:
+        MessageFlags.Ephemeral
+
+    });
+
+  }
+
+
+  try {
+
+    // =================================================
+    // Ticket-Ersteller aus Thread-Namen auslesen
+    // =================================================
+
+    const nameParts =
+      thread.name.split('・');
+
+
+    const ticketOwnerId =
+      nameParts[nameParts.length - 1];
+
+
+    if (
+      !ticketOwnerId ||
+      !/^\d+$/.test(ticketOwnerId)
+    ) {
+
+      return interaction.reply({
+
+        content:
+          '❌ Der Ersteller des Tickets konnte nicht gefunden werden.',
+
+        flags:
+          MessageFlags.Ephemeral
+
+      });
+
+    }
+
+
+    // =================================================
+    // Prüfen, ob User der Ersteller ist
+    // =================================================
+
+    if (
+      interaction.user.id !==
+      ticketOwnerId
+    ) {
+
+      return interaction.reply({
+
+        content:
+          '❌ Nur der Ersteller dieses Tickets kann es schließen.',
+
+        flags:
+          MessageFlags.Ephemeral
+
+      });
+
+    }
+
+
+    // =================================================
+    // User aus Private Thread entfernen
+    // =================================================
+
+    try {
+
+      await thread.members.remove(
+        ticketOwnerId
+      );
+
+    } catch (error) {
+
+      console.error(
+        'Fehler beim Entfernen des Ticket-Erstellers:',
+        error
+      );
+
+    }
+
+
+    // =================================================
+    // Bestätigung an User
+    // =================================================
+
+    const confirmedTicketCloseContainer =
+      new ContainerBuilder()
+
+        .addTextDisplayComponents(
+
+          new TextDisplayBuilder()
+            .setContent(
+
+              '# 🔒 Ticket geschlossen\n\n' +
+              'Du hast das Ticket erfolgreich geschlossen.\n\n' +
+              'Du kannst dieses Ticket nun nicht mehr bearbeiten.\n' +
+              'Das Support-Team kann das Ticket weiterhin bearbeiten.'
+
+            )
+
+        );
+
+
+    await interaction.reply({
+
+      components:
+        [confirmedTicketCloseContainer],
+
+      flags:
+        MessageFlags.IsComponentsV2 |
+        MessageFlags.Ephemeral
+
+    });
+
+
+    // =================================================
+    // Support-Benachrichtigung
+    // =================================================
+
+    const supportCloseContainer =
+      new ContainerBuilder()
+
+        .addTextDisplayComponents(
+
+          new TextDisplayBuilder()
+            .setContent(
+
+              '# 🛑 Ticket wartet auf endgültige Schließung\n\n' +
+              'Der Ticket-Ersteller hat das Ticket geschlossen.\n\n' +
+              'Das Ticket kann nun von einem autorisierten Support-Mitglied endgültig gelöscht werden.'
+
+            )
+
+        )
+
+        .addSeparatorComponents(
+
+          new SeparatorBuilder()
+            .setDivider(true)
+            .setSpacing(1)
+
+        )
+
+        .addActionRowComponents(
+
+          new ActionRowBuilder()
+            .addComponents(
+
+              new ButtonBuilder()
+                .setCustomId(
+                  'discord_bot_final_ticket_close'
+                )
+                .setLabel(
+                  'Ticket endgültig schließen'
+                )
+                .setEmoji('🗑️')
+                .setStyle(
+                  ButtonStyle.Danger
+                )
+
+            )
+
+        );
+
+
+    await thread.send({
+
+      components:
+        [supportCloseContainer],
+
+      flags:
+        MessageFlags.IsComponentsV2
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      'Fehler beim Schließen des Discord Bot Tickets:',
+      error
+    );
+
+
+    if (!interaction.replied) {
+
+      await interaction.reply({
+
+        content:
+          '❌ Beim Schließen des Tickets ist ein Fehler aufgetreten.',
+
+        flags:
+          MessageFlags.Ephemeral
+
+      });
+
+    }
+
+  }
+
+}
+
+
+// =====================================================
+// Custom Discord Bot
+// Ticket endgültig löschen
+// =====================================================
+
+async function discordBotFinalTicketCloseHandler(
+  interaction
+) {
+
+  const thread =
+    interaction.channel;
+
+
+  // =================================================
+  // Thread prüfen
+  // =================================================
+
+  if (
+    !thread ||
+    !thread.isThread()
+  ) {
+
+    return interaction.reply({
+
+      content:
+        '❌ Dieser Button kann nur in einem Ticket verwendet werden.',
+
+      flags:
+        MessageFlags.Ephemeral
+
+    });
+
+  }
+
+
+  // =================================================
+  // Support-Rolle prüfen
+  // =================================================
+
+  const supportRoleId =
+    process.env.DISCORD_BOT_ROLE_ID;
+
+
+  if (!supportRoleId) {
+
+    return interaction.reply({
+
+      content:
+        '❌ DISCORD_BOT_ROLE_ID ist nicht konfiguriert.',
+
+      flags:
+        MessageFlags.Ephemeral
+
+    });
+
+  }
+
+
+  const hasSupportRole =
+    interaction.member.roles.cache.has(
+      supportRoleId
+    );
+
+
+  if (!hasSupportRole) {
+
+    return interaction.reply({
+
+      content:
+        '❌ Nur autorisierte Support-Mitglieder können dieses Ticket endgültig schließen.',
+
+      flags:
+        MessageFlags.Ephemeral
+
+    });
+
+  }
+
+
+  // =================================================
+  // Ticket löschen
+  // =================================================
+
+  try {
+
+    await interaction.reply({
+
+      content:
+        '🗑️ Das Ticket wird endgültig geschlossen...',
+
+      flags:
+        MessageFlags.Ephemeral
+
+    });
+
+
+    await new Promise(
+      resolve =>
+        setTimeout(resolve, 1500)
+    );
+
+
+    await thread.delete(
+      'Custom Discord Bot Ticket wurde von einem autorisierten Support-Mitglied endgültig geschlossen'
+    );
+
+  } catch (error) {
+
+    console.error(
+      'Fehler beim endgültigen Löschen des Discord Bot Tickets:',
+      error
+    );
+
+  }
+
+}
 
 
 // =====================================================
